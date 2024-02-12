@@ -33,32 +33,42 @@
 		\section{Principi del Cloud Computing}
 		
 		\subsection{Servizi Internet}
-		Le caratteristiche comuni dei servizi Internet odierni sono le seguenti:
+		Le caratteristiche richieste dei servizi Internet odierni sono le seguenti:
 		
 		\begin{itemize}
-		    \item Robustezza e sicurezza: garantiscono il continuo funzionamento e nessuna falla di sicurezza
-		    \item Scalabilità: garantiscono il funzionamento indipendentemente dal carico di lavoro (anche a fronte di attacchi DDoS)
+		    \item Robustezza e sicurezza: garantiscono il continuo funzionamento e sono resistenti a intrusioni
+		    \item Scalabilità: indipendentemente dal carico di lavoro (anche a fronte di attacchi DDoS)
 		    \item Usabilità: sono di facile utilizzo
-		    \item Costo: sono apparentemente gratis
+		    \item Costo: (apparentemente) gratuiti
 		    \item Infrastruttura: si basano su grossi datacenter distribuiti
 		\end{itemize}
 		
+		\begin{figure}[ht]
+			\centering
+			\includegraphics[width=0.8\textwidth]{SAC_01.png}
+		\end{figure}
+		
 		Uno dei problemi principali, che si evolvono con l'evolversi del web e dell'esponenziale crescita dei dati, è la scalabilità.
-		Alcune soluzioni applicabili nel passato oggi non lo sono più. Esempio: oggi so come gestire 10 gigabyte di dati, domani saprò gestirne 10 Exabyte?\\
-		Al giorno d'oggi miliardi di persone hanno più di un dispositivo connesso alla rete, consumando milioni di servizi, usufruibili da milioni di providers, costruiti su milioni di server, contenenti zettabyte di dati $10^{21} Byte$, connessi tramite petabyte di reti.
-		Un altro vincolo importante è la tolleranza zero per i reclami irrisolti che possono portare alla perdite di un cliente. \\
-		C'è un cambio di paradigma, se prima il punto di partenza era lo sviluppo di una tecnologia adesso è lo sviluppo di un servizio.
+		Alcune soluzioni applicabili nel passato oggi non lo sono più.\\
+		Ad esempio: oggi so come gestire 10 gigabyte di dati, domani saprò gestirne 10 Exabyte?\\
+		
+		Al giorno d'oggi miliardi di persone hanno più di un dispositivo connesso alla rete, fruendo di milioni di servizi, messi a disposizione da milioni di providers, costruiti su milioni di server, contenenti zettabyte di dati, connessi tramite petabyte di reti.\\
+		
+		Un altro vincolo importante è la costante attenzione per i reclami dei clienti che possono portare alla perdita di fiducia.
+		C'è un cambio di paradigma, se prima il punto di partenza era lo sviluppo di una tecnologia adesso è lo sviluppo di un \textbf{servizio}.
 		
 		\subsubsection{Definizione di servizi}
-		\emph{Definizione}: La capacità di un sistema di fornire \textbf{continuativamente} una o più risposte in presenza di specifiche richieste al sistema da parte di un utente.\\
-		Possiamo definire un servizio funzionante quando continua a fornire delle risposte. Un concetto importante introdotto nella definizione è la continuità. Essa può essere definita in molti modi:
+		\emph{Definizione}: La capacità di un sistema di fornire in modo \textbf{continuativo} una o più risposte in presenza di specifiche richieste al sistema da parte di un utente.\\
+		Un servizio viene detto funzionante fintanto che continua a fornire delle risposte.\\
+		
+		Un concetto importante introdotto nella definizione è la continuità con cui deve essere erogato il servizio. Possiamo quantificarla in due modi:
 		
 		\begin{itemize}
 		    \item Tramite contratto
 		    \begin{itemize}
 		        \item SLA: Service Level Agreement in cui ci si accorda sui pagamenti e le penali in caso di mancato adempimento ai requisiti stabiliti
 		    \end{itemize}
-		    \item Reputazione: pena la perdita di clienti e di fiducia
+		    \item Reputazione: La mancata continuità nell'erogazione del servizio porta alla perdita di clienti e di fiducia nei confronti del provider
 		\end{itemize}
 		Il compito di un ingegnere cloud è quello di implementare un sistema scalabile che garantisca una certa continuità, attraverso i seguenti passi:
 		
@@ -69,45 +79,34 @@
 		    \item Document
 		    \item Monitor
 		    \item Fix/Update
-		
 		\end{itemize}
 		
-		\begin{figure}[ht]
-		\centering
-		\includegraphics[width=0.8\textwidth]{SAC_01.png}
-		\end{figure}
-		
-		Le regole d'oro da seguire sono le seguenti:
+		Per quanto riguarda invece le linee guida generali a cui attenersi sempre, cosiddette \textit{d'oro}, individuiamo le seguenti:
 		\begin{itemize}
 		    \item Evitare:
 		    \begin{itemize}
-		        \item Colli di bottiglia
-		        \item Single Point of Failure. Occorre cercare almeno di identificarli anche se dovesse essere difficile correggerli\\
+		        \item Colli di bottiglia: singoli punti nell'infrastruttura che limitano la capacità totale dell'applicazione
+		        \item Single Point of Failure: parte del sistema che, qualora fallisse, influenza tutto l'apparato arrestandolo. Benché non sia facile rimuoverli in certi casi, occorre almeno identificarli.
 		        Esempi:
 		        \begin{itemize}
 		            \item Elettricità e continuità di corrente in un data center.
 		        \end{itemize}
 		    \end{itemize}
-		    \item Replicazione, a più livelli:
-		    \begin{itemize}
-		        \item Macchine server.
-		        \item Dati.
-		        \item Lavori computazionali.
-		        \item Tasks.
-		    \end{itemize}
 		\end{itemize}
 		
 		\subsection{Cloud Computing}
 		\paragraph{Grid Computing}
-		L’architettura \textbf{grid computing} unisce, anche in cloud, diverse unità geograficamente distanti per intervalli di tempo e scopi specifici: i computer comunicano e agiscono come una singola identità di calcolo. Utilizzare un nodo significa quindi accedere alla potenza computazionale di tutta la rete.\\
-		Il grid computing è una rete che può essere sia omogenea che eterogenea, ovvero formata da nodi con lo stesso sistema operativo o meno. I nodi che compongono l’architettura sono indipendenti: ciascun server o computer mantiene la propria autonomia dalla rete e condivide solo in parte le proprie risorse specifiche. La rete del grid computing è quindi decentralizzata: possono esistere più server autonomi all’interno della griglia.
+		L’architettura \textbf{grid computing} unisce diverse unità geograficamente distanti per determinati intervalli di tempo con uno scopo specifico: i computer comunicano e agiscono come una singola identità di calcolo. Utilizzare un nodo significa quindi accedere alla potenza computazionale di tutta la rete.\\
+		
+		Il grid computing è una rete che può essere sia omogenea che eterogenea, ovvero formata da nodi con identici o meno. I nodi che compongono l’architettura sono indipendenti: ciascun server o computer mantiene la propria autonomia dalla rete e condivide solo in parte le proprie risorse specifiche. La rete del grid computing è quindi decentralizzata.\\
+		
 		L'idea principale è quella di un grande supercomputer distribuito in cui molte organizzazioni contribuiscono mettendo a disposizione le proprie risorse. L'unità di lavoro è il \emph{gridlet}.
 		
 		\paragraph{Globus Toolkit}
 		E' un meccanismo per creare sistemi grid, finalizzato al calcolo scientifico e parallelo. Lo scheduling viene eseguito per batch jobs, presentando quindi un'interattività limitata. Assenza di un chiaro modello economico.
 		
 		\subsection{Gestione delle Risorse}
-		E' importante cercare di capire l'utilizzo di un server che può variare nel corso di una giornata, per non avere delle perdite di introiti derivanti dalla \textbf{mancata erogazione del servizio} oppure dall'avere macchine \textbf{inutilizzate}. Un'intuizione particolare fu quella di Bezos di vendere potenza di calcolo inutilizzata ad altre aziende.\\
+		E' importante cercare di quantificare l'utilizzo di un server per potere soddisfare il carico richiesto. Quest'ultimo, infatti, può variare sensibilmente nel corso di una giornata e non vogliamo incorrere né in perdite di introiti derivanti dalla \textbf{mancata erogazione del servizio} né nella \textit{sotto-utilizzazione} delle stesse macchine. Un'intuizione vincente fu quella di Bezos che inizio a vendere potenza di calcolo inutilizzata ad altre aziende.\\
 		
 		Le politiche per gestire la potenza di calcolo in un'azienda sono diverse, si può scegliere di:
 		\begin{itemize}
@@ -122,17 +121,18 @@
 		    \item Evitando \textbf{overload} e \textbf{bottlenecks}
 		    \item Fornendo \textbf{tempi di risposta} accettabili
 		\end{itemize}
-		Evitare invece SPoF (Single Points of Failure) garantisce realizzabilità. 
+		Contariamente a quanto si può pensare sulla base delle regole auree dette prima, evitare SPoF (Single Points of Failure) non garantisce alte performance ma realizzabilità.\\
 		
-		L'obiettivo consiste nel fornire un determinato throughput  (rateo di risposte) e un determinato tempo di risposta. I due obiettivi possono essere legati, dove la richiesta di uno prevede la necessità dell'altro.
-		
+		L'obiettivo consiste nel fornire un determinato throughput (rateo di risposte) e un determinato tempo di risposta. I due obiettivi possono essere legati, dove la richiesta di uno prevede la necessità dell'altro.\\
 		Osservando una catena di servizi ci basta capire quale unità di elaborazione ha il troughput minore rispetto agli altri per capire quale sarà il collo di bottiglia nella nostra rete.
-		\begin{figure}[h]
+		
+		\begin{figure}[ht]
 		\centering
 		\includegraphics[width=0.8\textwidth]{SAC_02.png}
 		\end{figure}
-		Per ottenere quindi un sistema efficiente che non generi colli di bottiglia bisogna fare in modo che tutti i servizi abbiano lo stesso data rate. Un'opzione è quella di replicare i servizi che abbiano un data rate minore, in modo da allinearli al livello degli altri.
-		E' importante considerare che se abbiamo del codice che non può essere ne replicabile ne parallelizzabile, non sarà particolarmente adatto  ad una struttura basata sul Cloud, per cui potrebbero facilmente generarsi colli di bottiglia.
+		
+		Per ottenere un sistema efficiente che non generi colli di bottiglia bisogna fare in modo che tutti i servizi abbiano lo stesso \textit{data rate}. Un'opzione è quella di replicare i servizi che abbiano un data rate minore, in modo da allinearli al livello degli altri.
+		E' importante considerare che se abbiamo del codice che non può essere ne replicabile ne parallelizzabile, non sarà particolarmente adatto ad una struttura basata sul Cloud, per cui potrebbero facilmente generarsi colli di bottiglia.
 		
 		\subsection{Legge di Amdahl}
 		\begin{figure}[ht]
@@ -150,9 +150,11 @@
 		\[S=\frac{Ts+Tp}{Ts+\frac{Tp}{n}}\]
 		Per n \textrightarrow $\infty$ : \[S=\frac{S}{1-p}\]
 		
-		"Il miglioramento delle prestazioni di un sistema che si può ottenere parallelizzando una certa parte del sistema è limitato dalla frazione di tempo in cui tale parte è effettivamente utilizzata"
+		
+		Il miglioramento delle prestazioni di un sistema che si può ottenere parallelizzando una certa parte del sistema è limitato dalla frazione di tempo in cui tale parte è effettivamente utilizzata
 		
 		\subsection{Paradigmi del Cloud Computing}
+		
 		\begin{figure}[ht]
 		\centering
 		\includegraphics[width=0.5\textwidth]{SAC_04.png}
@@ -165,6 +167,7 @@
 		\end{itemize}
 		
 		\subsubsection{Paradigma Service}
+		
 		\begin{figure}[ht]
 			\begin{minipage}{0.45\textwidth}
 			\centering
@@ -175,11 +178,14 @@
 				\includegraphics[width=0.8\textwidth]{SAC_A2_service_paradigm.jpg}
 			\end{minipage}
 		\end{figure}
+		
 		In base al paradigma scelto sono disponibili differenti livelli di controllo:
 		\begin{itemize}
-		    \item Software: In questo caso il provider fornisce all'utente solamente una console per controllare il software.
-		    \item Platform: L'utente non ha più un'idea chiara di cosa succeda a livello di sistema operativo. A livello applicativo ha anche qualche limitazione, come per esempio versioni di compatibilità. Gran parte del controllo rimane al provider.
-		    \item Infrastructure: In questo tipo di struttura l'utente ha la possibilità di gestire il sistema operativo della macchina. Il provider del server dovrà gestire virtualizzazione, servers, storage, e networking.
+		    \item Software: è la forma più completa di servizi di cloud computing, che fornisce un'intera applicazione gestita dal provider, tramite un browser web.
+		    Gli aggiornamenti del software, le correzioni dei bug e la manutenzione generale del software sono gestiti dal provider e l'utente si connette all'applicazione tramite una dashboard o un'API. Non è necessaria l'installazione del software sui singoli computer e l'accesso di gruppo al programma è più fluido e affidabile.
+		    \item Platform: Il provider ospita l'hardware e il software sulla propria infrastruttura e fornisce questa piattaforma all'utente come soluzione integrata, stack di soluzioni o servizio attraverso una connessione Internet. All'ambiente per costruire e distribuire ci pensa il provider.
+		    \item Infrastructure: Si tratta di un servizio pay-as-you-go in cui una terza parte fornisce all'utente servizi di infrastruttura, come lo storage e la virtualizzazione, in base alle sue esigenze, tramite un cloud, attraverso Internet.
+		    L'utente è responsabile del sistema operativo e di tutti i dati, le applicazioni, il middleware e i runtime, mentre il provider gli fornisce l'accesso e la gestione della rete, dei server, della virtualizzazione e dello storage di cui ha bisogno. 
 		\end{itemize}
 		
 		
@@ -193,20 +199,17 @@
 		    \begin{minipage}{0.45\textwidth}
 		        \centering
 		        \includegraphics[width=0.9\textwidth]{SAC_06.png} % first figure itself
-		        \caption{Cloud Provider \& Cloud Customer}
 		    \end{minipage}\hfill
 		    \begin{minipage}{0.45\textwidth}
 		        \centering
 		        \includegraphics[width=0.9\textwidth]{SAC_07.png} % second figure itself
-		        \caption{Paradigmi di distribuzione}
 		    \end{minipage}
 		\end{figure}
 		
 		\begin{itemize}
 		    \item Public Cloud: Un cloud pubblico offre i suoi servizi a qualunque utente. Questa struttura deve affrontare il problema della eterogeneità degli utenti, che possono avere bisogni diversi.
 		    \item Community Cloud: Gli utenti sono tra di loro più simili. In questo contesto il tipo di servizio è cucito su un determinato tipo di utenza. Da un punto di vista strutturale il cloud può essere ospitato sia dal provider che affidarsi ad un terzo (pubblica amministrazione, assistenza sanitaria)
-		    \item Private Cloud:
-		    In questo caso tutto il lavoro svolto dal cloud sarà solo ed esclusivamente legato all'azienda/entità.
+		    \item Private Cloud: In questo caso tutto il lavoro svolto dal cloud sarà solo ed esclusivamente legato all'azienda/entità.
 		    Può essere gestito sia dall'azienda che da terzi
 		    \item Hybrid: Mix tra le tipologie precedenti. Ad esempio possono essere più cloud (privati) federati tra di loro che devono svolgere compiti simili, o cloud privati che si appoggiano a cloud pubblici per gestire determinati compiti che possono generare dei picchi di richieste normalmente insoddisfabili. (Amazon).
 		\end{itemize}
@@ -215,7 +218,7 @@
 		\paragraph{Vertical Silos}
 		\begin{wrapfigure}{r}{0.4\textwidth}
 			\centering
-			\includegraphics[width=0.4\linewidth]{SAC_A2_verticalsilos}
+			\includegraphics[width=0.6\linewidth]{SAC_A2_verticalsilos}
 			\label{fig:saca2verticalsilos}
 		\end{wrapfigure}
 		
@@ -233,13 +236,13 @@
 		    \item Con costi abbordabili: pay-per-use
 		\end{itemize}
 		
-		\emph{Definizione}: Il cloud computing è un modello per l'accesso immediato a un set di risorse di computing condivise e configurabili (rete, server, storage, applicazioni e servizi) che possono essere rapidamente forniti e deployed con il minimo costo di gestione e l'interazione del servizio provider. 
+		\emph{Definizione}: Il cloud computing è un modello per l'accesso immediato a un set di risorse di computing condivise e configurabili (rete, server, storage, applicazioni e servizi) che possono essere rapidamente forniti e impiegati con il minimo costo di gestione e l'interazione del servizio provider. 
 		
 		\subsection{Caratteristiche del Cloud}
 		Per capire il passaggio a infrastrutture Cloud nell'utilizzo odierno dell'informatica è importante capire quali sono le motivazioni di ciò e i requisiti che il Cloud ha soddisfatto.
 		
 		\subsubsection{Requisiti}
-		E' assolutamente necessario che il software implementato funzioni bene indipendentemente dal numero di utenti che lo stanno utilizzando, garantendo prestazioni, affidabilità e robustezza. 
+		E' assolutamente necessario che il software implementato funzioni bene indipendentemente dal \textbf{numero di utenti} che lo stanno utilizzando, garantendo prestazioni, affidabilità e robustezza. 
 		Per soddisfare questi requisiti si può ricorrere ad una maggiore potenza di calcolo o alla diminuzione dei costi di trasmissione, ma queste sono vecchie soluzioni. Le nuove soluzioni hanno l'obiettivo comune di doversi adattare rapidamente ai cambiamenti e al bisogno di \textbf{elasticità}, in quanto l'utilizzo di un sistema cloud può essere molto variabile.
 		L'elasticità consiste nel sapere trovare un \textbf{equilibrio} tra i costi di infrastruttura e i tempi di esecuzione.
 		
@@ -247,7 +250,7 @@
 		Per ottenere tale elasticità è opportuno evitare errori come colli di bottiglia, SPOF e comportamenti sincroni. 
 		E' sempre bene usare pratiche di replicazione e orchestrazione autonoma.
 		A livello di programmazione non è possibile applicare concetti classici come appunto quello della sincronizzazione.
-		Per esempio i dati stessi non posso godere di una totale consistenza, avendo quindi in ogni punto del software dati aggiornati e pronti all'elaborazione.
+		Per esempio i dati stessi non posso godere di una \textbf{consistenza} totale, avendo quindi in ogni punto del software dati aggiornati e pronti all'elaborazione.
 		Lo stesso discorso vale per la comunicazione che non può essere totalizzante e asincrona in ogni momento. 
 		Ecco perché per il cloud è opportuno adottare diversi paradigmi a livello software:
 		
@@ -257,11 +260,11 @@
 		    \begin{itemize}
 		        \item Lazy consistency: I dati non vengono aggiornati sempre immediatamente.
 		        \item Distribuzione locale o geografica.
-		        \item Caching.
+		        \item Caching
 		    \end{itemize}
 		    \item Comunicazione:
 		    \begin{itemize}
-		        \item Asincrona.
+		        \item Asincrona
 		        \item IPC (Inter Process Comunication) limitate.
 		    \end{itemize}
 		\end{itemize}
@@ -279,7 +282,7 @@
 		\begin{itemize}
 		    \item Monolitico: Un singolo software, difficile da replicare e mantenere, quindi costoso. 
 		    \item SOA: Service Oriented Architecture. Architettura basata su protocolli SOA e su XML
-		    \item Microservizi: Consiste nel suddividere l'architettura in tanti piccoli servizi facili da replicare e riutilizzare ma sopratutto da implementare
+		    \item Microservizi: Consiste nel suddividere l'architettura in tanti piccoli servizi facili da replicare e impiegare ma sopratutto da implementare
 		    \item Serverless: Architettura senza server, una sorta di microservizi 2.0
 		\end{itemize}
 		
@@ -287,7 +290,7 @@
 		\centering
 		\includegraphics[width=0.8\textwidth]{SAC_A2_architecture_server.png}
 		\end{figure}
-		Le architetture ibride prevalgono nella maggior parte delle aziende per la difficoltà a convertirsi ai nuovi paradigmi.
+		Le architetture ibride prevalgono nella maggior parte delle aziende per la difficoltà di queste a convertirsi ai nuovi paradigmi.
 		
 		\subsubsection{Modelli pre-SOA}
 		
@@ -302,7 +305,7 @@
 		
 		\begin{figure}[ht]
 			\centering
-			\includegraphics[width=0.7\linewidth]{SAC_A3_rpc}
+			\includegraphics[width=0.8\linewidth]{SAC_A3_rpc}
 
 			\label{fig:saca3rpc}
 		\end{figure}
@@ -310,12 +313,12 @@
 		Il codice \emph{stub} è una porzione di codice che simula il comportamento di un altro software:
 		\begin{itemize}
 		\tightlist
-			\item  The client calls the client stub. The call is a local procedure call, with parameters pushed on to the stack in the normal way.
-			\item The client stub packs the parameters into a message and makes a system call to send the message. Packing the parameters is called marshalling.
-			\item The client's local operating system sends the message from the client machine to the server machine.
-			\item The local operating system on the server machine passes the incoming packets to the server stub.
-			\item The server stub unpacks the parameters from the message. Unpacking the parameters is called unmarshalling.
-			\item Finally, the server stub calls the server procedure. The reply traces the same steps in the reverse direction.
+			\item Il client chiama lo \textbf{s}tub del client. La chiamata è una chiamata di procedura locale, con i parametri inseriti nello stack nel modo normale.
+			\item Lo stub del client impacchetta i parametri in un messaggio ed effettua una chiamata di sistema per inviare il messaggio. L'impacchettamento dei parametri è chiamato \textbf{marshalling}.
+			\item Il sistema operativo locale del client invia il messaggio dalla macchina client alla macchina server.
+			\item Il sistema operativo locale della macchina server passa i pacchetti in arrivo allo stub del server.
+			\item Lo stub del server scompatta i parametri dal messaggio. Lo scompattamento dei parametri è chiamato unmarshalling.
+			\item Infine, lo stub del server chiama la procedura del server. La risposta ripercorre gli stessi passi in senso inverso.
 		\end{itemize}
 		
 		\paragraph{OO-RPC}
@@ -327,7 +330,7 @@
 		Si possono avere così tre scenari:
 		\begin{itemize}
 		    \item SOA intra-aziendali.
-		    \item SOA inter-aziendali con rapporti B2B: Un esempio può essere EXPEDIA che cerca e confronta varie offerte di altre aziende (compagnie aeree).
+		    \item SOA inter-aziendali con rapporti B2B. Un esempio è EXPEDIA che cerca e confronta varie offerte di altre aziende (compagnie aeree).
 		    \item SOA inter-aziendali con servizi offerti liberamente.
 		\end{itemize}
 		Gli elementi che caratterizzano i SOA sono:
@@ -413,14 +416,14 @@
 		
 		\begin{itemize}
 		    \item Modello client server.
-		    \item Operazione stateless, una caratteristica molto vantaggiosa.
+		    \item Operazione stateless.
 		    \item I risultati possono essere salvati in cache.
 		    \item Struttura a strati. 
 		    \item Un servizio REST può interfacciarsi con altri servizi. 
-		    \item Interfaccia uniforme: Uso di URI ( Uniform Resource Identifier ), fornisce una rappresentazione delle azioni e dei messaggi autodescrittiva. 
+		    \item Interfaccia uniforme: L'uso di URI ( Uniform Resource Identifier ), fornisce una rappresentazione delle azioni e dei messaggi autodescrittiva. 
 		\end{itemize}
 		
-		Non ci sono espliciti limiti nei messaggi. Le tipiche azioni seguono il paradigma CRUD:
+		Benché non ci siano espliciti limiti nella configurazione dei messaggi, Le azioni tipiche seguono il paradigma CRUD:
 		\begin{itemize}
 		    \item CRUD paradigm: 
 		    \begin{itemize}
@@ -462,16 +465,19 @@
 		\end{figure}
 		
 		\newpage
-		E' possibile definire un TTL, \textit{time to live}, per stabilire il tempo massimo di esistenza della nostra cache. Una richiesta HTTP può essere \textit{cached} in modo da non dover nuovamente essere richiesta al server. 
+		Una richiesta HTTP può essere \textit{cached} in modo da non dover nuovamente essere richiesta al server. E', inoltre, possibile definire un TTL, \textit{time to live}, per stabilire il tempo massimo di esistenza all'interno della cache.\\
 		Un \textit{Etag} mantiene i metadati sulla risorsa e sull'ultima modifica ad essa fatta tramite un MD5 digest della rappresentazione della risorsa, tramite cui viene verificato se la risorsa cached è aggiornata o meno.
 
 		\subsubsection{RESTful API}
-		Standard \textit{de facto} per la costruzione di sistemi distribuiti. 
-		I servizi REST non hanno supporto diretto per generare un client da un IDL mentre i sistemi SOAP possono generare codice STUBS da WSDL (Web Service Description Language), un linguaggio formale in formato XML utilizzato per la creazione di "documenti" per la descrizione di servizi web.\\
-		Deve essere quindi utilizzato un description language, un esempio è OpenAPI, una specifica implementazione per IDL machine-readable usata per descrivere, produrre e visualizzare RESTful web services.\\
-		Un concetto fondamentale delle chiamate REST è il controllo dei media, ovvero del tipo di contenuto disponibile che il client può chiedere o che il server può fornire. 
-		L'idea di base è che una rappresentazione di un oggetto dovrebbe dire al cliente cosa può fare con l'oggetto o le azioni correlate che potrebbe intraprendere. 
-		Tali descrizioni sono chiamate "\textbf{controlli ipermediali}". Il paradigma Hypermedia as the Engine of Application State prevede che l'utente non abbia conoscenza a priori di come interagire con un applicazione e abbia solo una conoscenza generica degli hypermedia.
+		Rappresenta lo standard \textit{de facto} per la costruzione di sistemi distribuiti.\\
+		I servizi REST non hanno supporto diretto per generare un client da un IDL (termine generico per indicare un linguaggio che consente a un programma di comunicare con un altro scritto in una lingua sconosciuta) mentre i sistemi SOAP possono generare codice STUBS da WSDL (Web Service Description Language), un linguaggio formale in formato XML utilizzato per la creazione di "documenti" per la descrizione di servizi web.\\
+		
+		Occorre quindi un description language, cioè una specifica implementazione per IDL machine-readable usata per descrivere, produrre e visualizzare RESTful web services. Un esempio è OpenAPI.\\
+		
+		Un concetto fondamentale delle chiamate REST è il controllo dei media, ovvero del tipo di contenuto disponibile che il client può chiedere e che il server può fornire. 
+		L'idea di base è che una rappresentazione di un oggetto dovrebbe dire al cliente cosa può fare con l'oggetto o le azioni correlate che potrebbe intraprendere.
+		Tali descrizioni sono chiamate "\textbf{controlli ipermediali}". Il paradigma Hypermedia as the Engine of Application State prevede che l'utente non abbia conoscenza a priori di come interagire con un applicazione e abbia solo una conoscenza generica degli hypermedia.\\
+		
 		Le public REST APIs devono essere:
 		\begin{itemize}
 		    \item Semplici e stateless: Non essere legate a processi come i servizi Web.
@@ -482,9 +488,10 @@
 		\end{itemize}
 		
 		\subsection{Architetture guidate agli eventi (EDA)}
-		Supporta la generazione e la gestione della notificazione degli eventi. Sono delle architetture flessibili e reattive che riescono ad adattarsi ai cambiamenti in \textbf{tempo reale}.
-		Gli elementi che generano notifiche non devono necessariamente conoscere i componenti software del ricevente. Il tempo di risposta non è deterministico.
-		\\
+		Alternativa all'architettura REST, si basa sul concetto di evento che guida le interazioni o i risultati. Questo evento può assumere una varietà di forme e la natura di come questi eventi vengono comunicati all'utente finale è spesso l'elemento più significativo che definisce l'implementazione dell'EDA. Sono delle architetture flessibili e reattive che riescono ad adattarsi ai cambiamenti in \textbf{tempo reale}.\\
+		
+		Gli elementi che generano notifiche non devono necessariamente conoscere i componenti software del ricevente. Il tempo di risposta non è deterministico proprio per la natura di questa architettura.\\
+		
 		Le notifiche di eventi annunciano una modifica nello stato del sistema, possono essere innescate da:
 		\begin{itemize}
 		    \item Fonti esterne: Input utente, condizioni ambientali.
@@ -512,23 +519,12 @@
 		
 		L’eventual consistency, se da un lato risulta più debole sia della consistenza del teorema CAP che della consistenza delle transazioni ACID, dall’altro, a regime e con un certo grado di imperfezione, tende a raggiungerle entrambe. Infatti la ricezione dei messaggi dai sistemi cooperanti permette sia di replicare in locale i dati aggiornati di pertinenza dei sistemi remoti, sia di adeguare i dati di pertinenza del sistema locale al fine di soddisfare i vincoli di integrità complessivi del sistema distribuito.
 		
-		\paragraph{Atom Feed}
-		Atom è un sostituto basato su HTTP per RSS (Really Simple Syndication) progettato per pubblicare cose come newsfeed, ma a causa della sua implementazione basata su HTTP è di natura molto RESTful.
-		Quando si utilizza Atom in sostituzione di un ESB, invece di iscriversi agli argomenti, un consumatore esegue invece il polling del feed Atom del componente. Quindi elabora i messaggi alla propria velocità e restituisce altri messaggi quando è pronto.
-		Poiché in genere non ci sono troppi abbonati al feed Atom di un singolo componente, il carico risultante non è significativo e ciascun consumatore controlla la propria capacità. Inoltre, se un consumatore si interrompe, non vi è alcuna preoccupazione che abbia perso i messaggi perché continua semplicemente da dove era stato interrotto.
-		Infine, i feed Atom forniscono una linea cronologica del componente.
-		\begin{itemize}
-		    \item I subscriber sono pochi
-		    \item Se l'intervallo di poll è breve
-		    \item Se la perdita di messaggi non è critica
-		\end{itemize}
-		In generale Atom è più semplice di altri approcci
-		
 		\subsection{Comunicazione e Coordinamento}
 		Dopo aver visto varie implementazioni di strutture cloud è importante cercare di capire come poterli gestire e orchestrare.
 		\begin{itemize}
-		    \item Orchestrazione: Un'autorità centralizzata controlla l'esecuzione dei servizi dei nodi, proprio come un direttore d'orchestra fa con i musicisti.
-		    \item Coreografia: Ogni componente conosce il proprio set di azioni prestabilito che deve compiere in relazione agli altri elementi con cui interagisce. Alla base di questo design vi è l'\textbf{Event Stream}, un bus su cui i componenti pubblicano e ricevono gli uni dagli altri ma non è un componente fisico vero e proprio come l'ESB. L'analogia è con i ballerini in cui ognuno sa cosa fare in base a come si muove il ballerino prima e dopo di lui. Questo modello di coordinamento è implicitamente decentralizzato.
+		    \item Orchestrazione: Un'autorità \textbf{centralizzata} controlla l'esecuzione dei servizi dei nodi, proprio come un direttore d'orchestra fa con i musicisti.
+		    \item Coreografia: Ogni componente conosce il proprio set di azioni prestabilito che deve compiere in relazione agli altri elementi con cui interagisce. Alla base di questo design vi è l'\textbf{Event Stream}, un bus su cui i componenti pubblicano e ricevono gli uni dagli altri. Questo non è un componente fisico vero e proprio come l'ESB.\\
+		    L'analogia è con i ballerini in cui ognuno sa cosa fare in base a come si muove il ballerino prima e dopo di lui. Questo modello di coordinamento è implicitamente \textbf{decentralizzato}.
 		\end{itemize}
 		
 		In entrambi i casi i servizi possono essere incapsulati in REST API, cambia solo il modo in cui vengono gestite le richieste.
@@ -542,25 +538,27 @@
 		
 		Un'altra caratteristica importante è quella di scrivere delle chiamate REST robuste e capaci di gestire errori e ritardi.\\
 		
-		\begin{wrapfigure}{r}{0.4\linewidth}
+		\begin{wrapfigure}{r}{0.5\linewidth}
 			\centering
 			\includegraphics[width=0.4\linewidth]{SAC_A3_breakers}
 			\label{fig:saca3breakers}
 		\end{wrapfigure}
 		\paragraph{Circuit Breakers}
 		
-		I Circuit Breakers sono un modello di progettazione utilizzato nello sviluppo del software. Vengono utilizzati per rilevare i guasti e prevedono una logica per evitare si questi si ripetano costantemente.
-		Se un servizio diventa troppo lento, viene marcato dal breaker come "bad" e restituirà un errore anziché continuare il polling. Bisognerà poi capire quando sarà tornato in buono stato riprovando a testarlo.\\
+		I Circuit Breakers sono un modello di progettazione utilizzato nello sviluppo del software. Vengono utilizzati per rilevare i guasti e prevedono una logica per evitare che questi si ripetano costantemente.\\
+		
+		Il circuit breaker funge da intermediario per le operazioni che potrebbero fallire. Questo deve monitorare il numero di fallimenti recenti che si sono verificati e utilizzare queste informazioni per decidere se consentire all'operazione di procedere o se restituire immediatamente un'eccezione, marcando il servizio come \textbf{bad}.
 		
 		\newpage
 		\section{Data Management}
 		\paragraph{Data Replication}
 		
-		La scalabilità di un sistema si può ottenere in due modi:
+		La scalabilità si può ottenere tramite:
 		\begin{itemize}
-			\item Scale-Up: Tramite il miglioramento delle risorse hardware del server. Presenta degli ovvi limiti fisici.
-			\item Scale-Out: Replicare il servizio su più server. Scalando orizzontalmente si ha una replicazione a livello computazionale e a livello di storage, per cui bisogna stabilire come quest'ultima venga aggiornata.
+			\item Scale-Up: Tramite il miglioramento delle risorse hardware del server. Presenta degli ovvi limiti fisici, risolvibili solo tramite lo scale out.
+			\item Scale-Out: Lo scaling orizzontale prende l'infrastruttura esistente e la replica per lavorare in parallelo. Questo ha l'effetto di aumentare la capacità dell'infrastruttura in modo approssimativamente lineare. Scalando orizzontalmente si ha una replicazione a livello di storage, per cui bisogna stabilire come quest'ultimo venga aggiornata.
 		\end{itemize}
+		
 		\begin{figure}[ht]
 			\centering
 			\includegraphics[width=0.65\linewidth]{SAC_A5_scaling}
@@ -580,15 +578,15 @@
 		\end{itemize}
 		
 		\subsection{Data Synchronization}
-		Se non abbiamo nessuna consistenza si hanno performance migliori, una migliore scalabilità e assenza di overhead dovuto alla sincronizzazione.
+		Se non abbiamo nessuna consistenza si hanno performance migliori, una migliore scalabilità e assenza di overhead dovuto alla sincronizzazione ma ovviamente non è adatto a nessuno scenario in cui vi sia replicazione.
 		Se invece abbiamo consistenza forte gli aggiornamenti sono immediati e non c'è rischio di perdere dei dati: è un paradigma adatto a servizi che necessitano di alta disponibilità. Il compromesso che nasce tra i due è la consistenza debole.\\
 		
-		Abbiamo due differenti tipi di copie:
+		Possiamo avere due differenti tipi di copie:
 		\begin{itemize}
 		    \item Primarie: Copie autoritarie.
-		    \item Master: Copie in lettura/scrittura. Le altre copie sono solo in lettura
+		    \item Master: Copie in lettura/scrittura.
 		\end{itemize}
-		Nel caso di consistenza forte tutte le copie sono primarie.
+		Tutte le altre copie che non siano primarie o master sono in sola lettura. Nel caso di consistenza \textbf{forte} tutte le copie sono primarie.
 		
 		\subsubsection{Concurrency control system}
 		\paragraph{One-Copy System} L'idea alla base è che tutte le copie fisiche dei dati si devono comportare come un singolo elemento logico. La sequenza di transazioni distribuite deve essere uguale all'esecuzione serializzata delle stesse sullo stesso elemento logico. Il che significa che quando leggiamo un dato questo deve essere il risultato della scrittura più recente dalla precedente transazione nell'equivalente ordine seriale.\\
@@ -599,11 +597,11 @@
 		La coerenza delle copie è garantita da un sistema di controllo che assicura il corretto funzionamento, dopo l'avvenuta sincronizzazione.	
 		
 		\paragraph{Two-phase commit}
-		E' un'altra strategia di sincronizzazione che ha bisogno di un coordinatore che prenda la decisione finale e interagisca con ogni partecipante. Può esserci anche un approccio gerarchico in cui il coordinatore delega i nodi primari di interpellare i nodi finali.
+		E' un'altra strategia di sincronizzazione che ha bisogno di un \textbf{coordinatore} che prenda la decisione finale e interagisca con ogni partecipante. Può esserci anche un approccio gerarchico in cui il coordinatore delega i nodi primari di interpellare i nodi finali.
 		Si basa su due fasi:
 		\begin{itemize}
-			\item Preparazione: in cui il coordinatore prepara tutte i partecipanti ad eseguire la transizione e attende che rispondano con l'esito dell'operazione.
-			\item Scrittura: in cui, sulla base dei voti dei partecipanti, il coordinatore decide se continuare nella transazione o interromperla e avvisa i partecipanti dell'esito della decisione. I partecipanti seguiranno le indicazioni o faranno rollback a prima del commit.
+			\item Preparazione: in cui il coordinatore prepara tutte i partecipanti ad eseguire la transizione e attende che questi rispondano con l'esito dell'operazione.
+			\item Scrittura: in cui, sulla base dei voti dei partecipanti, il coordinatore decide se continuare nella transazione o interromperla e avvisa i partecipanti dell'esito della decisione. I partecipanti seguiranno le indicazioni facendo o meno rollback a prima del commit.
 		\end{itemize}
 		\begin{figure}[ht]
 			\centering
@@ -618,11 +616,12 @@
 		Un esempio è Cassandra: quando un nodo riceve una query, identifica tutti i nodi che replicano l'elemento interessato attraverso una DHT (\textbf{Distributed Hash Table}). Invia quindi un aggiornamento della replica ai nodi trovati. In questo caso abbiamo una consistenza \textit{lazy} perché prima o poi la propagazione delle modifiche si estenderà a tutti i nodi.
 		
 		\paragraph{Primario e secondario}
-		Il server secondario può rispondere nel caso di failure del server primario, garantendo quindi availability. Può essere anche utilizzato per fornire performance aggiuntive. Le operazioni di lettura possono essere fatte anche solo sui server secondari. Le operazioni di scritture devono essere inviate al server primario che sarà successivamente sincronizzato con il server secondari, sincronizzazione che avviene periodicamente, siano essi pochi minuti o giorni. Tuttavia la copia nel server secondario viene utilizzata solo se la copia primaria non è disponibile.
+		In questo sistema il server secondario può rispondere solo nel caso di failure del server primario, garantendo quindi availability. Alternativamente può essere utilizzato per fornire performance aggiuntive. Le operazioni di scritture devono essere inviate al server primario che procederà successivamente a sincronizzare i server secondari, con una periodicità variabile (da pochi minuti a diversi giorni). Tuttavia la copia nel server secondario viene utilizzata solo se la copia primaria non è disponibile.
 		
 		\subsubsection{Consistenza forte e debole}
-		Le coppie di repliche primarie-primarie mantengono una consistenza forte venendo aggiornate immediatamente, mentre una coppia primaria-secondaria ha una consistenza debole.\\
-		Nei server secondari si può avere una perenne consistenza debole ma alla fine i dati convergeranno ad un'unica versione e le copie saranno coerenti. Per fare ciò vi è uno scambio periodico di dati con \textbf{timestamp}, un algoritmo inventato da Lamport per ordinare i messaggi.
+		Le coppie di repliche primarie-primarie mantengono una consistenza forte venendo aggiornate immediatamente, mentre una coppia primaria-secondaria ha una consistenza \textbf{debole}.\\
+		Nei server secondari si può avere una perenne consistenza debole ma prima o poi i dati convergeranno ad un'unica versione e le copie saranno coerenti. Per fare ciò vi è uno scambio periodico di dati con \textbf{timestamp}, un algoritmo inventato da Lamport per ordinare i messaggi.\\
+		
 		Vi sono due approcci per regolare la consistenza nel nostro database:
 		\begin{itemize}
 		    \item BASE
@@ -642,36 +641,37 @@
 		Risulta impossibile distribuire server primari in ognuno dei 60000 Autonomous Systems e riuscire a gestirne la consistenza. Per questo si utilizzano un numero sempre crescente di server secondari, utili anche al miglioramento delle performance.
 		
 		\paragraph{Cache}
-		Il caching dei dati avviene su più livelli: hardware, OS, software ma anche a livello browser, server e intermediari. L'obiettivo unico del caching è quello di \textbf{replicare} parte del contenuto originale in posizioni il più possibile vicine all'utilizzatore.
+		Il caching dei dati avviene su più livelli: hardware, OS, software ma anche a livello browser, server e intermediari. L'obiettivo del caching è quello di \textbf{replicare} parte del contenuto originale in posizioni il più possibile vicine all'utilizzatore.
 		I principi su cui si basa il caching sono due:
 		\begin{itemize}
-			\item Località spaziale: se un utente accede a un dato è molto probabile che i futuri accessi siano vicini a quello stesso dato.
+			\item Località spaziale: se un utente accede a un dato è molto probabile che i futuri accessi siano nelle immediate vicinanze di quello stesso dato.
 			\item Località temporale: se un utente accede a un dato è molto probabile che accederà allo stesso dato a breve e non in un futuro remoto
 		\end{itemize}
+		
 		L'efficacia del caching si basa su tre metriche: \textit{cache hit} se trovo il dato in cache, \textit{cache miss} se non lo trovo e \textit{cache hit rate} ovvero il numero di \textit{hit} in un intervallo di tempo rispetto al numero totale di richieste in quello stesso intervallo.\\
+		
 		Vi sono vari meccanismi di memorizzazione nella cache:
 		\begin{itemize}
-		    \item Pull: Il contenuto viene caricato dal server primario quando viene richiesto dall'utente e non ne esiste una copia valida nel server secondario. Principalmente utilizzato da ISP e proxy servers.
-		    \item Push: I contenuti che vengono richiesti con maggiore probabilità sono pre-caricati sul server secondario. Utilizzato da reverse proxy, proxy che recupera i contenuti per conto di un client da uno o più server, e Content Delivery Network (CDN).
+		    \item Pull: Il contenuto viene fornito dal server primario a quello secondario quando quest'ultimo viene interpellato da un utente, e non ne esiste una copia valida in cache. Principalmente utilizzato da ISP e proxy servers.
+		    \item Push: I contenuti che vengono richiesti con maggiore probabilità sono attivamente inviati al server secondario. Utilizzato da reverse proxy, proxy che recupera i contenuti per conto di un client da uno o più server, e Content Delivery Network (CDN).
 		\end{itemize}
 		
 		\subsubsection{Replicazioni dei dati}
 		\begin{itemize}
-		    \item Server Proxy: Quando un browser richiede una risorsa questa prima viene ricercata nella cache locale e, in caso di esito negativo viene interrogato il server proxy.\\
-		    
-		    Dal punto di vista del proxy server, quando questo riceve una richiesta per una risorsa, questa viene prima ricercata nella propria cache locale e in caso negativo viene richiesta al server e salvata nella cache, prima di essere restituita al browser.\\
-		    
+		    \item Server Proxy: Dal punto di vista del proxy server, quando questo riceve una richiesta per una risorsa, questa viene prima ricercata nella propria cache locale e in caso negativo viene richiesta al server e salvata nella cache, prima di essere restituita al browser.\\
 		    La validità dei dati all'interno della cache si deduce dal tempo di creazione e dall'ultima modifica:
 		    \begin{itemize}
-		        \item Volatile: Vecchio dato ma modificato recentemente.
-		        \item Static: Vecchio dato e modificato tempo fa.
+		        \item Volatile: Dato vecchio ma modificato recentemente.
+		        \item Static: Dato vecchio e modificato tempo fa.
 		    \end{itemize}
-		    Se si ha un nuovo dato è difficile da stabilire ma sia presuppone volatile.
-		    Il popolamento della cache è guidato dalle richieste del client. Il proxy server non è molto utilizzato in quanto non gestisce contenuti generati dinamicamente e inoltre non supporta le connessioni HTTPS.
-		    \item Reverse Proxy: Un server virtuale posto di fronte al Web server in modo che possa immagazzinare risorse generate dinamicamente recenti. Può essere replicato e diffuso geograficamente.
+		    Se si ha un nuovo dato è difficile da stabilire ma si presuppone sia volatile.\\
+		    Il popolamento della cache è guidato dalle richieste del client.\\
+		    Il proxy server non è molto utilizzato in quanto non gestisce contenuti generati dinamicamente e inoltre non supporta le connessioni HTTPS \textit{end-to-end}.
+		    \item Reverse Proxy: Un server virtuale posto di fronte al Web server in modo che possa immagazzinare risorse recenti generate dinamicamente. Può essere replicato e diffuso geograficamente.
 		    \item Terze parti: ISP o CDN.
 		\end{itemize}
-		Sia Forward che	che Reverse proxy sono in grado di replicare i contenuti popolari, riducono i costi del server di origine, riducono il RTT per i client.\\
+		
+		Sia Forward che	Reverse proxy sono in grado di replicare i contenuti popolari, riducono i costi del server di origine, riducono il RTT per i client.\\
 		Solo il Reverse proxy può suddividere il carico intelligentemente tra i server di origine e modificare dinamicamente i contenuti per conto dei server di origine, in quanto più vicino al server primario.\\
 		Di contro, il Forward proxy riduce i costi legati all'ISP per il client.\\
 		
@@ -692,7 +692,7 @@
 		\subsubsection{Cache WEB}
 		Vi possono essere più server proxy che cooperano tra di loro per lo scambio di dati e per aumentare l'hit rate. Se, infatti, un proxy fa hit miss allora può esserci un altro proxy nelle vicinanze che quella risorsa l'ha in cache. Esistono diversi approcci ai proxy server cooperativi:
 		\begin{itemize}
-		    \item Schema gerarchico: Cooperazione \textbf{verticale}, su più \textbf{livelli}. Dato un miss locale la richiesta viene inoltrata a un nodo nel livello più alto della gerarchia. Ogni livello aumenta però la latenza. Livelli più alti contengono molti più dati per aumentare l'hit rate. Risolve il problema dei compulsory miss.
+		    \item Schema gerarchico: Cooperazione \textbf{verticale}, su più \textbf{livelli}. Dato un miss locale la richiesta viene inoltrata a un nodo nel livello più alto della gerarchia. Ogni livello aumenta però la latenza. Livelli più alti contengono molti più dati per aumentare l'hit rate. Risolve il problema dei \textit{compulsory miss}, cioè quando accediamo ad un dato per la prima volta e quindi questo non è presente in cache
 		    \item Schema piatto: Cooperazione \textbf{orizzontale} tra \textbf{pari}. I due approcci tipici sono legati alla rappresentazione dell'informazione:
 		    \begin{itemize}
 		    	\item Query-based: Quando arriva una richiesta per una risorsa che non ho in cache, la indirizzo ai miei \textbf{vicini}. Il global miss si avrà solo quando tutti i nodi avranno risposto ed ha la stessa velocità del nodo più lento.
@@ -725,20 +725,33 @@
 		    \centering
 		    \includegraphics[width=0.8\textwidth]{SAC_A4_cdn.png}
 		\end{figure}
-		Nonostante le prestazioni migliorino con le CDN, la risoluzione del DNS è più complessa e il tempo per la risoluzione è più alto.
+		Nonostante le prestazioni migliorino con le CDN, la risoluzione del DNS è più complessa e richiede più tempo.
 		\newpage
 		
 		\paragraph{Componenti CDN}
-		\begin{figure}[ht]
-		    \centering
-		    \includegraphics[width=0.8\textwidth]{SAC_A4_cdn_components.png}
-		\end{figure}
-		La CDN usa delle tecniche di routing con algoritmi molto sofisticati per garantire che il client richiedente la risorsa venga instradato alla copia più vicina e più veloce.
-		Meccanismi per la gestione dei contenuti
+		La CDN usa delle tecniche di routing con algoritmi molto sofisticati per garantire che il client richiedente la risorsa venga instradato alla copia più vicina e nel modo più veloce possibile.
+		Meccanismi per la gestione dei contenuti:
 		\begin{itemize}
 			\item URL Rewriting: La mappatura dei contenuti può essere basata sulla riscrittura delle pagine HTML. L'utente andrà a richiedere la pagina all'origin server che la CDN intercetterà e sovrascriverà gli embedded object con quelli presenti nella propria cache.
 			\item DNS Outsourcing: Tramite questa tecnica è possibile evitare del tutto l'origin server grazie ai server DNS delle CDN. Tramite un meccanismo di risoluzione DNS intelligente è possibile, infatti, decidere se risolvere con l'IP dell'origin server o quello del server della CDN. Così facendo si può cachare sia la pagina che gli embedded object.
 		\end{itemize}
+		
+		
+		\begin{figure}[ht]
+			\centering
+			\begin{minipage}{0.5\textwidth}
+				\centering
+				\includegraphics[width=0.9\linewidth]{images/SAC_A5_urlrewriting}
+				\caption{URL Rewriting}
+			\end{minipage}\hfill
+			\begin{minipage}{0.5\textwidth}
+				\centering
+				\includegraphics[width=0.9\linewidth]{images/SAC_A5_dnsoutsourcing}
+				\caption{DNS Outsourcing}
+			\end{minipage}
+		\end{figure}
+
+		
 		Le soluzioni possono comunque essere mixate ad esempio tramite URL rewriting all'origin server e al primary CDN server mentre si potrebbe utilizzare il DNS outsourcing per bilanciare il carico tra origin, primary e secondary servers. 
 		\newpage
 		
@@ -774,13 +787,12 @@
 					determinati costrutti matematici (generalmente variabili aleatorie). Uscire dai casi base
 					del modello, tramite soluzioni analitiche, è molto più complesso però, quindi meno
 					versatile
-					\item Simulazione: tramite software è possibile simulare il comportamento di un sistema. È
-					la via di mezzo fra modello matematico e modello reale, quindi un buon compromesso.
-					Inoltre, è molto più versatile del modello matematico ma ha comunque degli intervalli di
-					approssimazione di cui bisogna tenere conto
+					\item Simulazione: tramite software è possibile simulare il comportamento di un sistema. È la via di mezzo fra modello matematico e modello reale, quindi un buon compromesso.
+					Inoltre, è molto più versatile del modello matematico ma ha comunque degli intervalli di approssimazione di cui bisogna tenere conto
 				\end{itemize}
 			\end{itemize}
 		\end{itemize}
+		\newpage
 		I parametri prestazionale di maggior interesse sono:
 		
 		\begin{itemize}
@@ -789,19 +801,18 @@
 			\item Error Rate: frazioni di richieste non servite correttamente
 		\end{itemize}
 		
-		Tutti questi parametri dipendono direttamente dal carico corrente del sistema. Le classiche curve di carico di un sistema sono le seguenti:
+		Tutti questi parametri dipendono direttamente dal carico corrente del sistema.\\
+		
+		Le classiche curve di carico di un sistema sono le seguenti:
 		\begin{figure}[ht]
 			\centering
 			\includegraphics[width=0.7\linewidth]{SAC_D1_load1}
-		
 			\label{fig:sacd1load1}
 		\end{figure}
 		
-		Il tempo di risposta varia in modo particolare: rimane molto basso finché l’offered load (ovvero $\frac{richieste}{intervallo}$) rimane nella capacità del sistema. Quando si arriva
-		a saturare il sistema si entra nella cosiddetta \textit{kneeling} zone, oltre la quale una piccola variazione
-		di traffico fa variare di diversi ordini di grandezza il tempo di risposta.
-		Ciò avviene non perché il sistema ci mettea più tempo a processare le richieste bensì perché il traffico in arrivo, impossibile da processare, viene accodato in determinate strutture dati del sistema.
-		Più le code sono piene, più la probabilità di scartare i pacchetti aumenta. Quando si verifica questa condizione il sistema è in trashing, cioè passa più tempo a gestire i context switch che a fare lavoro utile.
+		Il tempo di risposta varia in un modo preciso: rimane molto basso finché l’offered load (ovvero $\frac{richieste}{intervallo}$) rimane nella capacità del sistema. Quando si arriva a saturare il sistema si entra nella cosiddetta \textit{kneeling} zone, oltre la quale una piccola variazione di traffico fa variare di diversi ordini di grandezza il tempo di risposta.\\
+		Ciò avviene non perché il sistema ci metta più tempo a processare le richieste bensì perché il traffico in arrivo, impossibile da processare, viene accodato.
+		Più le code sono piene, più aumenta il tempo di risposta. Il limite superiore è garantito dal \textit{timeout} che impedisce alla curva di salire ancora. 
 		
 		\begin{figure}[ht]
 			\centering
@@ -809,7 +820,7 @@
 			\label{fig:sacd1load2}
 		\end{figure}
 		
-		Il tempo di risposta aumenta perché il sistema è saturo. All’arrivo nella zona di kneeling, il numero di richieste processate al secondo va in stallo perché il sistema non è in grado di processare nuove richieste. Dato che le nuove richieste vengono scartate il troughput del sistema diminuisce.
+		Il throughput invece cresce linearmente fino alla \textbf{saturazione}, momento nel quale raggiunge la capacità massima. Da quel punto in poi le richieste verranno accodate e il sistema passerà più tempo a gestire i context switch (\textit{trashing}) che ad eseguire lavoro utile. Il throughput quindi cala.
 		
 		\begin{figure}[ht]
 			\centering
@@ -828,7 +839,7 @@
 		
 		In questi modelli si considerano i sistemi a coda (con
 		accodamento di richieste). Non serve che il modello ritorni un
-		risultato preciso, ma basta conoscere almeno l'\emph{ordine di grandezza
+		risultato preciso, è sufficiente conoscere almeno l'\emph{ordine di grandezza
 			per sapere se è necessario scalare o meno}.
 		
 		\paragraph{Notazione dei Sistemi a Coda}\label{notazione-dei-sistemi-a-coda}
@@ -853,11 +864,17 @@
 			Log Normale, una Gaussiana con sopra un Logaritmico)
 		\end{itemize}
 		
-	
+		Un processo Poissoniano è un processo nel quale gli arrivi non dipendono dallo stato, ovvero la probabilità di un arrivo è indipendente dalle altre.
+		\begin{itemize}
+			\item Il tasso con cui arrivano i clienti è indicato con \(\lambda\)
+			\item Il tasso con cui lasciano il sistema è indicato con \(\mu\)
+			\item L'utilizzazione è indicata con \(\rho\) ed è uguale a \(\rho = \frac{\lambda}{\mu}\)
+		\end{itemize}
+		
 		\paragraph{M/M/1}\label{mm1}
 		Il tempo di risposta aumenta normalmente con l'aumento
-		dell'utilizzazione (e quindi del carico) del sistema. Il \emph{Tempo di
-			Risposta} \(T_R\) è dato da: \(T_R = \frac{1}{\mu-\lambda}\) .
+		dell'utilizzazione (e quindi del carico) del sistema. Il \emph{tempo di
+			risposta} \(T_R\) è dato da: \(T_R = \frac{1}{\mu-\lambda}\) .
 		
 		\paragraph{M/G/1}\label{mg1}
 				
@@ -869,7 +886,12 @@
 		particolare, analizzando la formula del tempo di attesa medio, questo è
 		dato da: \[
 		E[W] = \frac{1+C_v^2}{2}+\frac{\rho}{1-\rho}
-		\] Dove \(C_v^2\) è il coefficiente di variazione,
+		\]
+		Mentre il tempo medio di risposta è dato da:
+		\[
+		E[T] = 1+\frac{1+C_v^2}{2}\frac{\rho}{1-\rho}
+		\]
+		Dove \(C_v^2\) è il coefficiente di variazione,
 		ovvero il \textbf{\emph{rapporto tra la deviazione standard e il valore
 				medio}}, il quale \textbf{\emph{descrive la variazione del tempo di
 				servizio}}. Per Poisson il valore di questo coefficiente è \(1\):
@@ -883,7 +905,7 @@
 		tipo può essere usato per calcolare il tempo di risposta
 		di un sistema generico.
 		\[
-		W_M = \frac{P_{cb,N}}{\mu N(\-\rho}(\frac{C^2_S+C^2_D}{2}
+		W_M = \frac{P_{cb,N}}{\mu N(1-\rho)}\frac{C^2_S+C^2_D}{2}
 		\]
 		\[
 		P_cb,N \approx
@@ -894,12 +916,12 @@
 		\]
 		Segue l'approssimazione di Allen-Cuneen:
 		\begin{itemize}
-			\item Wm = Tempo medio di attesa
-			\item Pcb,N = Probabilità che tutti i server siano impegnati.
-			\item Cs, Cd, Coefficiente di variazione(deviazione standard / media):
+			\item $W_m$ = Tempo medio di attesa
+			\item $P_cb,N$ = Probabilità che tutti i server siano impegnati.
+			\item $C_s, C_d$ Coefficiente di variazione(deviazione standard / media):
 			\begin{itemize}
-				\item Cs: Arrivo
-				\item Cd: Servizio.
+				\item $C_s$: Arrivo
+				\item $C_d$: Servizio.
 			\end{itemize}
 		\end{itemize}
 		
@@ -915,25 +937,12 @@
 		La disponibilità \(A\) (Availability) è data da: \[
 		A = \frac{MTTF}{MTBF} = 1 - \frac{MTTR}{MTBF}
 		\] Sulla base di questo fattore è possibile calcolare delle
-		classi di disponibilità. La replicazione geografica
-		può essere talvolta un metodo di \textbf{\emph{autoriparazione dei
-				problemi senza personale}}. Nei sistemi come i datacenter la
-		recovery in seguito a un guasto deve essere
-		fatta automaticamente, mentre il
-		rilevamento degli errori può essere fatto
-		durante il funzionamento del sistema (\emph{concurrent
-			detection}) o nei \textbf{\emph{momenti in cui le operazioni sono
-				sospese}} (preemptive detection).
+		classi di disponibilità.\\
 		
-		\begin{verbatim}
-			graph
-			A[Fault Tolerance] -->B(Error Detection)
-			B -->D[Concurrent Detection]
-			B -->E[Preemptive Detection]
-			A[Fault Tolerance] -->C(Recovery)
-			C --> F[Error Handling]
-			C --> G[Fault Handling]
-		\end{verbatim}
+		La replicazione geografica può essere talvolta un metodo di \textbf{\emph{autoriparazione dei problemi senza personale}}. Nei sistemi come i datacenter la recovery in seguito a un guasto deve essere
+		fatta automaticamente, mentre il rilevamento degli errori può essere fatto
+		durante il funzionamento del sistema (\emph{concurrent detection}) o nei \textbf{\emph{momenti in cui le operazioni sono	sospese}} (preemptive detection).
+		
 		
 		Considerando invece \(N\) sottosistemi, ciascuno con una
 		probabilità di failure \(r_i\) la \textbf{probabilità
@@ -943,10 +952,10 @@
 		\begin{itemize}
 			\tightlist
 			\item
-			S. Seriale: basta che un solo sottosistema fallisca →
+			Seriale: basta che un solo sottosistema fallisca →
 			\(R=\prod r_i\)
 			\item
-			S. Parallelo: tutti i sottosistemi devono fallire
+			Parallelo: tutti i sottosistemi devono fallire
 			→~\(R = 1- \prod (1-r_i)\)
 		\end{itemize}
 		
@@ -954,8 +963,12 @@
 		
 		Il CAP Teorem afferma che nella \emph{progettazione di un
 			datacenter} è possibile scegliere solo \textbf{\emph{due
-				caratteristiche}} tra Consistenza,
-		Availability e Partition Tolerance.
+				caratteristiche}} tra:
+			\begin{itemize}
+				\item Consistency: ogni client vede lo stesso dato anche dopo una modifica o una cancellazione
+				\item Availability: ogni client può trovare una replica del dato anche in caso di fallimenti parziali dei nodi
+				\item Partition Tolerance: il sistema continua a funzionare nonostante malfunzionamenti parziali
+			\end{itemize}
 		
 		\newpage
 		\section{Modelli di costo}
@@ -978,28 +991,31 @@
 		Possiamo individuare due categorie di costi:
 		\begin{itemize}
 			\item CAPEX: Ammortizzati durante gli anni. Ci danno una riduzione del flusso di cassa disponibile
-			\item OPEX: Fondi per gestire le attività quotidiane, si esauriscono entro l'anno di acquisto.
+			\item OPEX: Fondi per gestire le attività quotidiane, si esauriscono entro l'anno di acquisto
 		\end{itemize}
 		
 		\subsubsection{Metriche di costi}
 		\paragraph{TCO} \mbox{}\\
-		Costo totale di proprietà, tutti i costi diretti e indiretti (CAPEX e OPEX) di gestione di un bene durante la sua vita utile.
-		Rappresenta non solo l'investimento iniziale ma anche tutti i costi associati all'utilizzo della risorsa, può durare dai 3 ai 7 anni.
-		Per calcolare il tco, bisogna valutare le spese di hardware e software, il supporto gestionale e tecnico, tempo di formazione, eventuali viaggio e contratti di supporto, implementazione e costi di comunicazione.
-		Per quanto riguarda i costi indiretti posso riguardare sia l'utente finale, sul sostegno e la formazione, ma anche il tempo di inattività.
+		
 		\begin{figure}[ht]
 			\centering
 			\includegraphics[width=0.8\textwidth]{SAC_D1_TCOExample.png}
 		\end{figure}
+		Costo totale di proprietà, tutti i costi diretti, CAPEX, e indiretti, OPEX, di gestione di un bene durante la sua vita utile.\\
+		Le spese in conto capitale (CAPEX) sono spese per l'acquisto di beni o servizi significativi che verranno utilizzati per migliorare le prestazioni dell'azienda in futuro. Le spese in conto capitale riguardano tipicamente attività fisse come immobili, impianti e attrezzature (PP\&E). Questi costi vengono ammortizzati nel corso degli anni.\\
+		Le spese operative (OPEX) sono i costi che un'azienda sostiene per la gestione delle sue attività quotidiane. In quanto tali, non si applicano ai costi relativi alla produzione di beni e servizi. Tipicamente riguardano gli acquisti per i consumi entro l'anno di attività.\\
+		
+		Per calcolare il TCO, bisogna valutare le spese di hardware e software, il supporto gestionale e tecnico, tempo di formazione, eventuali viaggio e contratti di supporto, implementazione e costi di comunicazione.
+		
 		
 		\paragraph{Vantaggi TCO}
 		Rappresenta non solo l'investimento iniziale ma considera anche tutti gli altri costi associati. Assicura un'analisi completa a lungo tempo.
 		
 		\paragraph{Svantaggi TCO}
-		Non considera i vantaggi delle varie opzioni non considerati, non da nessuna tempistica e comporta un costo di acquisizione elevato. Inoltre può essere difficile quantificare tutto.
+		Non considera i vantaggi delle varie opzioni non considerate, non da nessuna tempistica e comporta un costo di acquisizione elevato. Inoltre può essere difficile quantificare tutto.
 		Per un'azienda considerare un TCO significa seguire una strategia basata sul costo minimo piuttosto che sul massimo rendimento.
 		
-		\paragraph{ROI}:\mbox{}\\
+		\paragraph{ROI}\mbox{}\\
 		Il ritorno sull'investimento ha lo scopo di confrontare i costi di un progetto con il valore dei suoi risultati, viene espresso in percentuale di un periodo: $$ ROI =\frac{Utile Netto}{ Investimento} * 100 $$
 		Grazie a questo modello siamo in grado di analizzare la tempistica e l'entità degli investimenti, oltre che a considerare più scenari.
 		Gli errori più comuni si verificano quando si sottovalutano gli investimenti o non si tiene conto del tempo impiegato dai dipendenti o del costo del capitale nel tempo.\\ 
@@ -1036,7 +1052,7 @@
 		    \end{itemize}
 		\end{itemize}
 		
-		\emph{Def.} Virtualizzazione: 
+		\emph{Definizione} La virtualizzazione è: 
 		\begin{quote}
 			Astrazione delle componenti hardware degli elaboratori col fine di fornirli al software sotto forma di risorsa virtuale.
 		\end{quote}
@@ -1050,20 +1066,20 @@
 		
 		La virtualizzazione può avvenire a diversi livelli:
 		\begin{itemize}
-		    \item Containerizzazione \textrightarrow  Sistema operativo
-		    \item Emulazione \textrightarrow  Circuiti
+			\item Emulazione \textrightarrow  Circuiti
 		    \item Virtualizzazione \textrightarrow  Hardware
+		    \item Containerizzazione \textrightarrow  Sistema operativo
 		\end{itemize}
 		
-		\paragraph{Emulazione}
-		Emulazione di componenti hardware che tipicamente hanno un'architettura hardware differente da quella dell'host, per cui occorre tradurre le operazioni macchina generate dal processore nell'architettura di destinazione. Presenta un'ottima flessibilità nonostante il grande overhead.\newline
+		\subsection{Emulazione}
+		Emulazione di componenti hardware che tipicamente hanno un'architettura differente da quella dell'host, per cui occorre tradurre le operazioni macchina generate dal processore nell'architettura di destinazione. Presenta un'ottima flessibilità nonostante il grande overhead.\newline
 		Esempi:
 		\begin{itemize}
 		    \item  BOCH
 		    \item  VICE (Commodore 64 emulator)
 		\end{itemize}
 		
-		\paragraph{Virtualizzazione}
+		\subsection{Virtualizzazione}
 		Terminologia:
 		\begin{itemize}
 		    \item Hypervisor: software per l'esecuzione di VM
@@ -1094,26 +1110,28 @@
 		\end{itemize}
 		
 		\subsection{Approccio alla virtualizzazione}
-		Grazie all'introduzione di concetti come macchina virtuale, memoria virtuale e hypervisor, possiamo definire alcuni concetti che forniscono i requisiti minimi hardware per supportare la virtualizzazione.\\
+		Grazie alle definizioni di macchina virtuale, memoria virtuale e hypervisor, possiamo definire alcuni concetti che forniscono i requisiti minimi hardware per supportare la virtualizzazione.\\
 		
-		Un primo approccio storicamente utilizzato è "\emph{Trap ed execute}": il codice gira sul guest fino a quando non viene invocata una istruzione \textbf{sensibile} che genererà una trap. Le trap sono gestite dall'hypervisor che si occupa di emulare il comportamento corretto e far riprendere l'esecuzione. Come si può notare, non tutte le istruzioni sono uguali, infatti quelle che possono accedere o modificare lo stato della macchina vengono considerate critiche in quanto possono:
+		Un primo approccio storicamente utilizzato è "\emph{Trap ed execute}": il codice gira sul guest fino a quando non viene invocata una istruzione \textbf{sensibile} che genererà una trap. Le trap sono gestite dall'hypervisor che si occupa di emulare il comportamento corretto e far riprendere l'esecuzione.
+		
+		\begin{figure}[ht]
+			\centering
+			\includegraphics[width=0.4\textwidth]{SAC_B1_hypervisorTrap.png}
+		\end{figure}
+		
+		Come si può notare, non tutte le istruzioni sono uguali, infatti quelle che possono accedere o modificare lo stato della macchina vengono considerate critiche in quanto possono:
 		\begin{itemize}
 		    \item Interrompere l'esecuzione.
 		    \item Accedere al registro degli stati.
 		    \item Accedere alla memoria tramite indirizzo fisico.
 		\end{itemize}
-		Le istruzioni sensibili devono quindi essere gestite solo dall'hypervisor tramite l'uso di 
-		"trap" a livello hardware.
-		\begin{figure}[ht]
-		    \centering
-		    \includegraphics[width=0.6\textwidth]{SAC_B1_hypervisorTrap.png}
-		\end{figure}
-		Queste operazioni di trap sono onerose e rendevano lente le piattaforme virtuali, ecco perchè la virtualizzazione ha cominciato a perdere d'interesse. Le tecnologie abilitanti per il cloud computing hanno fatto si che la virtualizzazioni prendesse più piede tra le tecnologie emergenti degli ultimi anni.\\
-		Il nuovo approccio consiste nell'utilizzare software appositamente ottimizzato per la virtualizzazione e la reintroduzione di supporto hardware compatibile con quest'ultima e notevolmente più potente. 
+		Le istruzioni sensibili devono quindi essere gestite solo dall'hypervisor tramite l'uso di "trap" a livello hardware.\\
+		
+		Queste operazioni di trap sono onerose e rendevano lente le piattaforme virtuali, ecco perchè la virtualizzazione ha cominciato a perdere d'interesse. Le tecnologie abilitanti per il cloud computing hanno fatto si che la virtualizzazioni prendesse più piede tra le tecnologie emergenti degli ultimi anni. Il nuovo approccio consiste nell'utilizzare software appositamente ottimizzato per la virtualizzazione e l'introduzione di supporto hardware compatibile con quest'ultima e notevolmente più potente. 
 		
 		\subsection{Principi di virtualizzazione}
 		Grazie al paper di Popek e Goldberg del 1974 si stabilirono delle basi teoriche sui concetti chiave e requisiti della virtualizzazione, oltre che alla definizione dell'approccio trap and execute.\\
-		\emph{Def} VM: 
+		\emph{Definizione} VM: 
 		\begin{quote}
 			Una macchina virtuale è considerata un duplicato efficiente e isolato della macchina reale.
 		\end{quote}
