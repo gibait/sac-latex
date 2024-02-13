@@ -1132,10 +1132,10 @@
 		\subsection{Principi di virtualizzazione}
 		Grazie al paper di Popek e Goldberg del 1974 si stabilirono delle basi teoriche sui concetti chiave e requisiti della virtualizzazione, oltre che alla definizione dell'approccio trap and execute.\\
 		\emph{Definizione} VM: 
-		\begin{quote}
+		\begin{quotation}
 			Una macchina virtuale è considerata un duplicato efficiente e isolato della macchina reale.
-		\end{quote}
-		Come software un VMM ha tre caratteristiche essenziali. In primo luogo, il VMM fornisce un ambiente per i programmi che è essenzialmente identico al computer originale; secondo, i programmi eseguiti in questo ambiente mostrano nel peggiore dei casi solo lievi diminuzioni di velocità; e infine, il VMM ha il controllo completo delle risorse di sistema.\\
+		\end{quotation}
+		In quanto software un VM Monitor ha tre caratteristiche essenziali. In primo luogo, il VMM fornisce un ambiente per i programmi che è essenzialmente identico al computer originale; secondo, i programmi eseguiti in questo ambiente mostrano nel peggiore dei casi solo lievi diminuzioni di velocità; e infine, il VMM ha il controllo completo delle risorse di sistema.\\
 		
 		Identifichiamo quindi tre requisiti fondamentali:
 		\begin{itemize}
@@ -1143,30 +1143,30 @@
 			\item Resource control/Safety
 			\item Efficiency/Performance
 		\end{itemize}
-		E una differente classificazione delle istruzioni:
+		E, come già accennato prima, una differente classificazione delle istruzioni:
 		\begin{itemize}
 		    \item Istruzioni \textbf{sicure}: Eseguibili dal guest senza problemi
 		    \item Istruzioni \textbf{privilegiate}: Supponendo che la CPU abbia due modalità di esecuzione, supervisor (\textit{ring 0}) e standard (\textit{ring 3}), queste istruzioni sono eseguibili solo in modalità supervisor.
-		    \item Istruzioni \textbf{sensibili}: Sono quelle istruzioni che l'hypervisor deve trappare per emulare il normale comportamento di un OS dando l'illusione al guest di possedere le risorse hardware
+		    \item Istruzioni \textbf{sensibili}: Sono quelle istruzioni che l'hypervisor deve trappare per emulare il normale comportamento di un OS dando l'illusione al guest di possedere le risorse hardware. Un'istruzione sensibile è, quindi, un'istruzione che osserva o modifica lo stato privilegiato della macchina, ovvero qualsiasi stato che può essere utilizzato per modificare il livello di privilegio del processore corrente. 
 		\end{itemize}
 		Se tutte le istruzioni sensibili sono anche privilegiate, la virtualizzazione diventa più facile e i trap vengono generati automaticamente quando un'istruzione sensibile viene eseguita dall'hypervisor. Se invece sono presenti istruzioni sensibili che non sono privilegiate potremmo avere dei problemi, in quanto l'hypervisor non può fare affidamento su trappole per acquisire e modificare il proprio comportamento e diventa più complessa l'implementazione. 
 		
 		\newpage
 		\subsection{Tecniche di virtualizzazione}
-		Abbiamo visto precedentemente che le tecniche virtualizzazione si basano sul livello al quale vogliamo eseguire l'astrazione (emulazione, virtualizzazione, container), 
-		attraverso approcci basati sull'hardware o sull'approccio per gestire le istruzioni sensibili (Trap and execute, traduzione binaria, patch binaria)
+		Abbiamo visto precedentemente che le tecniche di virtualizzazione si basano sul livello al quale vogliamo eseguire l'astrazione (emulazione, virtualizzazione, container), 
+		attraverso approcci basati sull'hardware o sull'approccio per gestire le istruzioni sensibili.
 		\begin{figure}[ht]
 		    \centering
 		    \includegraphics[width=0.6\textwidth]{SAC_B1_virtualizationTechnicques.png}
 		\end{figure}
 		
 		\subsubsection{Emulazione}
-		Attraverso un interprete emula il comportamento dell'hardware riproducendo l'architettura emulata. Il sistema operativo nativo viene eseguito sull'hardware emulato riproducendo le caratteristiche principali del chip. 
+		Un interprete emula il comportamento dell'hardware riproducendo l'architettura desiderata. Il sistema operativo nativo viene eseguito sull'hardware emulato riproducendo le caratteristiche principali del chip. 
 		\begin{itemize}
 		    \item Vantaggi:
 		    \begin{itemize}
 		        \item Separazione completa dall'ambiente emulato.
-		        \item Può eseguire software per hardware diverso.
+		        \item Può eseguire software pensato per hardware diverso.
 		        \item Elevata flessibilità.
 		    \end{itemize}
 		    \item Svantaggi:
@@ -1177,20 +1177,20 @@
 		\end{itemize}
 		
 		\subsubsection{Traduzione binaria}
-		A differenza dell'approccio basato sulle trap, che funziona a \textit{tempo di esecuzione}, viene effettuato un cambio di paradigma passando ad un approccio proattivo intervenendo sul codice prima che questo venga eseguito. 
-		Grazie alla compilazione anticipata, introdotto per dare supporto all'emulazione, questo metodo viene usato anche adesso nei sistemi di virtualizzazione.\\
+		A differenza dell'approccio basato sulle trap, che funziona a \textit{tempo di esecuzione}, si ha un cambio di paradigma passando ad un approccio proattivo, intervenendo sul codice \textbf{prima} che questo venga eseguito. 
+		Grazie alla compilazione anticipata, introdotta per dare supporto all'emulazione, questo metodo viene usato anche adesso nei sistemi di virtualizzazione.\\
 		I suoi punti cardine sono:
 		\begin{itemize}
 		    \item La traduzioni di istruzioni sensibili ma non privilegiate.
 		    \item Può funzionare anche in fase di esecuzione.
 		    \item Può memorizzare nella cache il codice tradotto. 
 		\end{itemize}
-		Principalmente si hanno due compiti:
+		Si articola in due fasi:
 		\begin{itemize}
 		    \item Scansione del codice: Viene analizzata solo una porzione del codice, concentrandosi a livello kernel, lasciando in sicurezza il codice \emph{userspace} perché si presuppone che quest'ultimo non utilizzi funzioni sensibili.
-		    \item Modifica del codice: Viene modificato il codice delle istruzioni sensibili in codice sicuro, \textbf{mantenendo} entrambe le copie.
+		    \item Modifica del codice: Viene modificato il codice originale sostituendo le istruzioni sensibili in codice sicuro. Vengono \textbf{mantenute} entrambe le copie.
 		\end{itemize}
-		Le unità di codice considerate sono sequenze di istruzioni denominate basic block.
+		Le unità di codice considerate sono sequenze di istruzioni dette \textbf{basic block}.
 		I blocchi possono essere tradotti una volta, riscrivendo gli indirizzi di salto presenti nel codice originale, e salvati nella cache per un eventuale riutilizzo.
 		\begin{figure}[ht]
 		    \centering
@@ -1209,22 +1209,22 @@
 		Regole per la traduzione:
 		\begin{itemize}
 		    \item IDENT: il codice può essere tradotto in modo identico
-		    \item Flusso di controllo diretto: Mappatura degli indirizzi in codice tradotto per istruzioni jmp, call, ret
-		    \item Flusso di controllo indiretto: Quando l'indirizzo non è disponibile al momento della traduzione bisogna calcolare gli indirizzi al volo.
-		    \item Istruzioni privilegiate: Bisogna riscriverle accuratamente
+		    \item Flusso di controllo diretto: mappatura degli indirizzi in codice tradotto per istruzioni jmp, call, ret
+		    \item Flusso di controllo indiretto: quando l'indirizzo non è disponibile al momento della traduzione bisogna calcolare gli indirizzi al volo.
+		    \item Istruzioni privilegiate: bisogna riscriverle accuratamente
 		\end{itemize}
 		La traduzione binaria riduce l'overhead durante l'esecuzione in quanto il grosso del compito viene svolto prima dell'esecuzione del programma, in fase di compilazione. 
 		
 		\subsubsection{Patch Binaria}
 		E' molto simile alla traduzione binaria ma la differenza sta nella gestione del codice tradotto.
-		In questo caso il codice tradotto va a Una macchina virtuale è considerata un duplicato efficiente e isolato della macchina reale. il codice originale. Inoltre il controllo per la memorizzazione della cache è più complesso.
+		In questo caso il codice tradotto va a sostituire. il codice originale. Il controllo per la memorizzazione della cache è, però, più complesso.
 		Un esempio di questa tecnica di virtualizzazione è Virtual Box
 		
 		\subsubsection{Paravirtualizzazione}
 		Il software di paravirtualizzazione agisce direttamente sull'hardware in modo da gestire la condivisione delle risorse destinate alle varie virtual machine.
-		Il codice del guest quando deve eseguire istruzioni sensibili utilizza delle API per interagire con l'hypervisor per interrupt o paginazione della memoria, dette \textbf{hypercalls}.
-		Come nel caso della traduzione binaria, la traduzione avviene in fase di compilazione.
-		L'esempio più comune è il progetto Xen.\\ 
+		Il codice del guest quando deve eseguire istruzioni sensibili utilizza delle API per interagire con l'hypervisor per interrupt o paginazione della memoria, dette \textbf{hypercalls}. Il guest deve quindi essere a conoscenza del fatto che opera in ambiente virtualizzato.\\
+		Come nel caso della traduzione binaria, la traduzione avviene in fase di compilazione.\\
+		L'esempio più comune è il progetto Xen.
 		
 		\begin{figure}[ht]
 			\centering
@@ -1234,29 +1234,25 @@
 		I limiti sono:
 		\begin{itemize}
 		    \item Modificare il guest: Occorre il supporto da parte del sistema operativo.
-		    \item Per rappresentare una valida alternativa deve essere integrata con altre opzioni quando non è possibile modificare il guest.
+		    \item Per rappresentare una valida alternativa, la paravirtualizzazione deve essere integrata con altre opzioni qualora non sia possibile modificare il guest.
 		\end{itemize}
-		Tramite la paravirtualizzazione è possibile caricare un device driver (\emph{dom0}) che è conscio di
-		essere all’interno di un ambiente virtualizzato. In questo modo è possibile creare una
-		periferica \textit{dummy} che non fa nient’altro che scrivere su un buffer di memoria che verrà successivamente
-		letto da dom0 (tramite hypercall). Una volta fatto ciò il device driver si occuperà, infine, di comunicare effettivamente con l'hardware.\\ 
+		
+		Xen è un kernel molto piccolo che viene	caricato per primo sulla macchina host e ottiene il controllo diretto dell'hardware. Sopra Xen, a un livello di privilegio inferiore, abbiamo i cosiddetti \textbf{domini}. Ci possono essere tanti domini quanti vogliamo, e all'interno di ogni dominio si può eseguire un intero sistema operativo con le proprie applicazioni. I domini sono isolati l'uno dall'altro e sono utilizzati per implementare le macchine virtuali guest. Un dominio speciale, Dom 0, ha accesso all'API di Xen per creare e distruggere altri domini tramite l'utilizzo di \textbf{hypercalls}.\\
+		
+		I dispositivi paravirtuali sono suddivisi in un \textbf{front-end} e un \textbf{back-end}, ogni dispositivo viene eseguito in un dominio diverso e scambia richieste di I/O al di fuori del proprio. La configurazione tipica prevede che il back-end venga eseguito in un dominio che ha accesso diretto ai dispositivi hardware (Dom0).
 		
 		\begin{figure}[ht]
 			\centering
 			\includegraphics[width=0.6\textwidth]{SAC_B1_virtualizationIO_PCI.png} % second figure itself
 		\end{figure}
 		
-		Inoltre, la gestione della memoria viene fatta in maniera più ottimizzata: dom0 (o
-		equivalenti) genera un processo che cerca di occupare quanta più RAM libera possibile
-		così da facilitare il lavoro dell'hypervisor quando dovrà assegnarla. In questo modo non c’è
-		bisogno di tradurre la RAM vera con quella del guest stesso (come avviene in
-		ambienti virtualizzati canonici).
+		Inoltre, la gestione della memoria viene fatta in maniera più ottimizzata: dom0 (o equivalenti) genera un processo che cerca di occupare quanta più RAM libera possibile così da facilitare il lavoro dell'hypervisor quando dovrà assegnarla. In questo modo non c’è bisogno di tradurre la RAM vera con quella del guest stesso (come avviene in	ambienti virtualizzati canonici).
 		
 		\paragraph{Gestione dell'hardware}
 		Sono concetti implementati sia in hypervisor di virtualizzatori completi sia in hypervisor di para virtualizzatori.
 		\begin{itemize}
-		    \item Emulazione dell'hardware: Massimizza la sicurezza. Utilizza la tecnica trap and execute. Si può avere un enorme overhead portando a un basso throughput e pessime performance per i video. 
-		    \item Accesso diretto all'hardware: Per i dispositivi che lo supportano è possibile assegnarli direttamente alla macchina virtuale. Massimizza le performance a discapito della sicurezza. Un ruolo importante dell'hypervisor è quello di escludere l'accesso simultaneo allo stesso hardware.
+		    \item Emulazione dell'hardware: Massimizza la sicurezza. Utilizza la tecnica trap and execute. Si può avere un enorme overhead portando a un basso throughput e pessime performance (specialmente per quanto riguarda la GPU). 
+		    \item Accesso diretto all'hardware: Per i dispositivi che lo supportano è possibile l'\textbf{assegnazione diretta} alla macchina virtuale. Massimizza le performance a discapito della sicurezza. Un ruolo importante dell'hypervisor è quello di escludere l'accesso simultaneo allo stesso hardware.
 		    \item Split driver: Un compromesso tra i due. In questo caso si hanno due parti:
 		    \begin{figure}[ht]
 		    	\centering
@@ -1269,15 +1265,14 @@
 		    \end{itemize}
 		    
 		    Back-end e Front-end sono consapevoli l'uno dell'altro e scambiando dati in modo efficiente usando hypercall e code di eventi.
-		    Esempio: VmWare.
 		\end{itemize}
 		
 		\subsection{Extensions}
 		\paragraph{Memory Ballooning}
 		Questo metodo viene utilizzato per gestire la RAM in maniera efficiente. Spesso, le
 		macchine virtuali non utilizzano tutta la RAM a loro assegnata, pertanto viene usato un
-		processo “\emph{ballooner}” per occupare le pagine di memoria correntemente non utilizzate, "gonfiandosi".\\
-		Quando una VM richiederà più RAM, l’hypervisor potrà interrogare il
+		processo “\emph{ballooner}” che le pagine di memoria correntemente non utilizzate, "gonfiandosi".\\
+		Quando una VM richiederà più RAM, l’hypervisor potrà interrogare il processo
 		ballooner per richiedere la memoria da assegnare alla VM, facendolo "sgonfiare". Grazie alla delega di queste operazioni, l'hypervisor può essere meno complesso in termini di codice.\\
 		
 		Anche una live migration di una macchina virtuale potrà essere molto più efficiente da
@@ -1285,26 +1280,18 @@
 		assegnate al ballooner e non alla macchina virtuale, risparmiando notevolmente tempo.
 		
 		\paragraph{Estensioni Hardware}
-		Per soddisfare i requisiti di P\&G, le architetture vengono estese per avere un ulteriore
-		livello destinato all'hypervisor di operatività (\emph{ring -1}). Ci sono quindi istruzioni in più che gli hypervisor
-		possono utilizzare per funzionare. Queste funzioni non sono solo di interesse della
-		CPU, ma anche per varie periferiche I/O, oltre che alla RAM.
-		Per quanto riguarda Intel, sono disponibili tre estensioni: CPU, IOMMU (I/O e RAM) e
-		network.
+		Per soddisfare i requisiti di P\&G, le architetture vengono estese per avere un ulteriore livello destinato all'hypervisor di operatività (\emph{ring -1}). Ci sono quindi istruzioni in più che gli hypervisor possono utilizzare per funzionare. Queste funzioni non sono solo di interesse della CPU, ma anche per varie periferiche I/O, oltre che alla RAM.
+		Per quanto riguarda Intel, sono disponibili tre estensioni: CPU, IOMMU (I/O e RAM) e network.
 		
 		\begin{figure}[ht]
 			\centering
 			\includegraphics[width=0.4\textwidth]{SAC_B1_virtualizationIO_HW.png} % second figure itself
 		\end{figure}
 		
-		Vengono aggiunte quindi 10 nuove istruzioni adibite a questo; inoltre, vengono aggiunte
-		altre due modalità di operazione (all’interno della modalità hypervisor), VMX root e VMX
-		non-root, usato dalle macchine guest.\\
-		In realtà quello che avviene è che il numero di modalità raddoppiano: vi sono 4 rings per
-		VMX non-root e altrettanti per VMX root, per emulare completamente tutto lo stack.
+		Vengono aggiunte quindi 10 nuove istruzioni adibite a questo; inoltre, vengono aggiunte altre due modalità di operazione (all’interno della modalità hypervisor), VMX \textbf{root} e VMX \textbf{non-root}, usato dalle macchine guest.\\
+		In realtà quello che avviene è che il numero di modalità raddoppiano: vi sono 4 rings per VMX non-root e altrettanti per VMX root, per emulare completamente tutto lo stack.
 		Questo significa che, ad esempio, il kernel di una macchina guest girerà al
-		\emph{ring 0} VMX non-root mentre il kernel dell’hypervisor girerà a \emph{ring 0} VMX root. Per commutare 
-		modalità verranno utilizzate apposite traps.\\
+		\emph{ring 0} VMX non-root mentre il kernel dell’hypervisor girerà a \emph{ring 0} VMX root. Per commutare modalità verranno utilizzate apposite traps.\\
 		
 		Vengono anche create delle strutture dati (VM control structures) che
 		permettono di gestire le macchine virtuali come se fossero dei processi (come i \textit{Process Control Blocks}).
@@ -1313,20 +1300,13 @@
 		livello hardware.
 		
 		\paragraph{Estensioni Network and I/O}
-		In questo caso, il problema è quello di andare ad accelerare le operazioni di I/O con
-		supporto hardware. Ad esempio, avendo una scheda di rete prestante, il sistema
-		operativo ha accesso diretto alla periferica (DMA). È possibile fare la stessa cosa in un
-		contesto virtualizzato? Sì, infatti è possibile rimappare la gestione della memoria da
-		parte dell’hypervisor in modo tale che le macchine guest possano utilizzare il supporto
-		hardware per questo genere di cose.
+		In questo caso, il problema è quello di andare ad accelerare le operazioni di I/O con	supporto hardware. Ad esempio, avendo una scheda di rete prestante, il sistema	operativo ha accesso diretto alla periferica (DMA). È possibile fare la stessa cosa in un contesto virtualizzato? Sì, infatti è possibile rimappare la gestione della memoria da parte dell’hypervisor in modo tale che le macchine guest possano utilizzare il supporto hardware per questo genere di cose.
 		
 		\subsection{Virtualizzazione della memoria}
-		Nel contesto virtualizzato, il modello paginato inizia ad avere dei problemi, serve un livello
-		di indirettezza ulteriore.
-		Tipicamente è possibile risalire alle pagine fisiche, partendo da quelle logiche, semplicemente consultando la \emph{page table}. In un contesto virtualizzato occorre, però, una page table su più livelli: uno per la macchina virtuale, che sta sull’host, e
-		uno per ogni macchina virtuale e i suoi spazi di indirizzamento.\\
+		Nel contesto virtualizzato, il modello paginato inizia ad avere dei problemi, serve un livello di indirettezza ulteriore.
+		Tipicamente è possibile risalire alle pagine fisiche, partendo da quelle logiche, semplicemente consultando la \emph{page table}. In un contesto virtualizzato occorre, però, una page table su più livelli: uno per la macchina virtuale, che sta sull’host, e uno per ogni macchina virtuale e i suoi spazi di indirizzamento.\\
 		
-		La virtualizzazione aggiunge quindi anche un altro livello indiretto: per ogni guest sono presenti pagine fisiche che fisiche non sono perché l'hardware è virtualizzato. Vengono dunque sviluppati, dai vendor
+		La virtualizzazione aggiunge quindi anche un altro livello indiretto: per ogni guest sono presenti pagine considerate dal guest fisiche ma che fisiche non sono perché l'hardware è virtualizzato. Vengono dunque sviluppati, dai vendor
 		delle CPU, supporti hardware per TLB \emph{innestata} e la MMU.
 		\begin{figure}[ht]
 			\centering
@@ -1337,10 +1317,10 @@
 		Tuttavia, è necessario che a partire dalla page table guest non sia possibile risalire fino a quella fisica dell'host, altrimenti il guest avrebbe essenzialmente il controllo della macchina. Vengono in aiuto le cosiddette \textbf{shadow page tables}, tabelle costruite dall'hypervisor, in cui si tiene traccia della rappresentazione delle page table del guest. Viene utilizzato il registro \verb*|CR3|, un puntatore al base page register per il guest correntemente in esecuzione, per gestire il cambio di page table.\\
 		La necessità di mappare le operazioni sulle pagine guest alle pagine dell'host può però portare ad un sovraccarico significativo nonostante sia trasparente per i guest.\\ 
 		
-		Un approccio alternativo prevede l'uso della paravirtualizzazione: guest e VMM condividono le tabelle ma il guest ha accesso in sola lettura alle pagine e la modifica avviene per mezzo di hypercall.
+		Un approccio alternativo prevede l'uso della paravirtualizzazione: guest e VMM condividono le tabelle ma il guest ha accesso in sola \textbf{lettura} alle pagine e la modifica avviene per mezzo di hypercall.
 		Questo approccio particolarmente efficiente è utilizzato in Xen.\\
 		
-		L'approccio attuale prevede invece l'utilizzo delle pagine nidificate, affidandosi al supporto hardware. Vi è un TLB per le pagine dei guest e uno aggiuntivo per mappare l'indirizzo fisico sull'host.
+		L'approccio attuale prevede invece l'utilizzo delle pagine nidificate, affidandosi al supporto hardware. Vi è un TLB per le pagine dei guest e uno aggiuntivo per mappare l'indirizzo fisico del guest su quello dell'host.
 		
 
 		\subsection{Virtualizzazione dell'archiviazione}
@@ -1361,7 +1341,7 @@
 		    Viene quindi creato un nuovo layer sul quale verranno scritte le modifiche successive. Per realizzare questo meccanismo vengono usati i
 		    \textit{delta links}, che contengono le modifiche fatte sullo snapshot (\textbf{base disk}).\\
 		    Diverse copie della stessa VM potranno partire dalla stessa immagine di base per creare diverse versioni con le proprie modifiche apportate mediante i delta links.
-		    \item QCOW: Evolve VMDK, implementando compressione, crittografia. Aggiunge support a sparse files anche se il sistema operativo host non lo supporta.
+		    \item QCOW: Evolve VMDK, implementando compressione, crittografia. Aggiunge supporto a sparse files anche se il sistema operativo host non lo supporta.
 		    \item File Docker a più livelli, come squashFS.
 		\end{itemize}
 		
@@ -1409,13 +1389,13 @@
 		
 		\newpage
 		\section{Containers}
-		I container permettono la distribuzione di software autonomo (con librerie, configurazioni e file necessari al funzionamento), garantiscono la compatibilità con il software pre-esistente (anche condividendo le librerie quando è utile) e la coesistenza di setup differenti grazie agli spazi isolati e modulari. Il tutto è impacchettato in modo che sia facile da condividere e installare.\\ 
+		I container permettono la distribuzione di software auto-contenuto (con librerie, configurazioni e file necessari al funzionamento), garantiscono la compatibilità con il software pre-esistente (anche condividendo le librerie quando è utile) e la coesistenza di setup differenti grazie agli spazi isolati e modulari. Il tutto impacchettato in modo che sia facile da condividere e installare.\\ 
 		
 		Le componenti di un software sono:
 		\begin{itemize}
 		    \item Processi: un processo è composto da:
 		    \begin{itemize}
-		        \item Codice statico: Elenco delle istruzioni del programma, dati statici come file e configurazioni
+		        \item Codice statico: Elenco delle istruzioni del programma
 		        \item Stato dinamico: Registri, memoria, allocazione delle risorse di sistema.
 		    \end{itemize}
 		    \item Codice statico: programmi, librerie.
@@ -1484,7 +1464,10 @@
 		\end{table}
 		
 		\subsection{Principi di containerizzazione}
-		Il concetto di base nasce con l'introduzione del comando \verb|chroot| che permette ad un processo e ad i suoi figli di lavorare con una root directory diversa da quella del sistema. Rappresenta il primo esempio di software isolation. Successivamente, verrà introdotto il concetto di \verb*|jail|, funzionalità che permette l'isolamento a livello network, oltre che a quello di root. Non solo ogni jail avrà un indirizzo diverso, ma, in generale, un intero stack di rete diverso, una diversa process list, un hostname diverso, un diverso set di utenti e di root users.
+		Il concetto di base nasce con l'introduzione del comando \verb|chroot| che permette ad un processo e ad i suoi \textit{child processes} di lavorare con una root directory diversa da quella del sistema. Rappresenta il primo esempio di software isolation.\\
+		
+		Successivamente, verrà introdotto il concetto di \verb*|jail|, funzionalità che permette l'isolamento a livello network, oltre che a quello di filesystem. Non solo ogni jail avrà un indirizzo diverso, ma, in generale, un intero stack di rete diverso, una diversa process list, un hostname diverso, un diverso set di utenti e di root users.\\
+		
 		Tuttavia chroot e jail forniscono una sicurezza limitata ed è possibile eluderne i vincoli. Infatti, è possibile usare i path
 		relativi per muoversi al di fuori alla chroot jail. Inoltre, chroot permette soltanto di isolare un processo a livello di filesystem, non a livello di risorse.\\
 		
@@ -1503,10 +1486,10 @@
 		\begin{itemize}
 		    \item Portabilità: I software dei container sono eseguibili e tutte le librerie sono autonome. Il container può essere eseguito su diversi sistemi
 		    \item Agilità: Supporto essenziale per lo sviluppo in DevOps, che garantisce un lavoro più fluido, aggiungendo solo configurazioni e codice specifico inerente al servizio.
-		    \item Velocità: I container sono un tipo di virtualizzazione light quindi hanno un tempo di avvia più rapido e incidono meno sul sistema, che si traduce in costi minori.
+		    \item Velocità: I container sono un tipo di virtualizzazione molto leggero quindi hanno un tempo di avvio più rapido e incidono meno sul sistema, che si traduce in costi minori.
 		    \item Isolamento: Un container rimane perfettamente isolato e non inficia ne su altri container ne sull'host. Per isolamento si intende anche un isolamento delle prestazioni, in quanto l'allocazione di memoria e CPU è limitata per il container.
 		    \item Efficienza: Relativa alla velocità e anche al rischio ridotto di sovraccarico, rispetto alla macchina virtuale che condivideva CPU e memoria. Inoltre non c'è bisogno di alcun driver para virtualizzato, il che rende più rapido l'accesso alle risorse.
-		    \item Facilità di gestione: Il container gestisce il networking (DNS,..), il bilanciamento del carico, assegnazione delle risorse, montaggio dell'archiviazione locale e basata sul cloud.
+		    \item Facilità di gestione: Il container gestisce il networking (DNS,..), il bilanciamento del carico, assegnazione delle risorse, \textit{mounting} dell'archiviazione locale e basata sul cloud.
 		    \item Sicurezza: Il codice dannoso nel container non può propagarsi (isolamento).
 		\end{itemize}
 	
@@ -1529,17 +1512,17 @@
 		\paragraph{Containerd}
 		Si occupa dell'astrazione e della esecuzione dei container a basso livello. Le sue funzioni principali, esposte tramite API, sono:
 		\begin{itemize}
-			\item Esecuzione dei container (usando \verb|runc|)
-			\item Gestione delle immagini dei container
-			\item Push/Pull delle immagini nel registro dei container.
+			\item \textbf{Esecuzione} dei container (usando \verb|runc|)
+			\item Gestione delle \textbf{immagini} dei container
+			\item Push/Pull delle immagini nel \textbf{registro} dei container.
 		\end{itemize}
 		Containerd è a sua volta un'astrazione di \verb*|runc|. I molteplici strati su cui è costruito Docker sono fatti per semplificare la portabilità sia tra container runtimes (ad esempio Kubernetes usa runtime differenti) sia tra diversi sistemi operativi (grazie al fatto che containerd è stato portato per molteplici OS).\\
 		
-		Docker è un container engine usato per:
+		Docker è un \textbf{container engine} usato per:
 		\begin{itemize}
-			\item Assemblare container
-			\item Gestire container
-			\item Eseguire applicazioni container-izzate
+			\item \textbf{Assemblare} container
+			\item \textbf{Gestire} container
+			\item \textbf{Eseguire} applicazioni container-izzate
 		\end{itemize}
 		Fornisce quindi i benefici dei container per uno sviluppo DevOps friendly e scalabile.
 		Ha un'architettura client-server:
@@ -1547,7 +1530,7 @@
 			\item Un demone gestire i container (\verb*|dockerd|)
 			\item Il client invoca i servizi del demone (\verb*|docker|) tramite REST API o UNIX socket
 		\end{itemize}
-		Docker fornisce un repository delle immagini dei container mediante il \textbf{registro}, utilizzato per archiviare e accedere alle immagini container.\\
+		Docker fornisce un repository delle immagini dei container mediante il \textbf{registro}, utilizzato per salvare e accedere alle immagini container.\\
 		
 		Docker gestisce oggetti che possono essere \textbf{immagini} o \textbf{container}.
 		Le immagini sono template read-only, contengono istruzioni per creare un container e possono anche essere derivate da altre immagini.\\
@@ -1557,7 +1540,7 @@
 		L'interazione è basata su comandi docker o comandi a riga. I container sono definiti da file di configurazione e da immagini.
 		
 		\subsubsection{Container file-system}
-		I container lavorano con i cosiddetti \emph{layered filesystem}, molto simile al meccanismo dei file usati per memorizzare i dischi delle macchine virtuali: la differenza principale di questi ultimi è che questo genere di filesystem ragionano a livello
+		I container lavorano con i cosiddetti \emph{layered filesystem}, molto simili al meccanismo dei file usati per memorizzare i dischi delle macchine virtuali: la differenza principale di questi ultimi è che questo genere di filesystem ragionano a livello
 		di file, non di blocchi.\\
 		
 		I container invece sono oggetti di lettura e scrittura ma solo il livello \textbf{superiore} è scrivibile in quanto basato sull'approccio Copy-On-Write: i layers delle immagini sono condivisi finché non vengono modificati, nel senso che i layer vengono scaricati e riutilizzati per tutte le immagini che li usano. Quando un container modifica un layer condiviso, i file modificati, e solo quelli, vengono copiati nel layer read-write succitato.
@@ -1572,7 +1555,7 @@
 		Sono disponibili anche altri approcci:
 		\begin{itemize}
 		    \item File system di unione: AUFS, sovrapposizioni
-		    \item Istantanee: BTRFS, ZFS.
+		    \item Snapshot: BTRFS, ZFS.
 		    \item Dispositivi a blocchi Copy-On-Write.
 		\end{itemize}
 		\begin{figure}[ht]
@@ -1598,13 +1581,13 @@
 		DNS server integrato in swarm, per cui ogni container può comunicare con un altro container non su indirizzo IP ma attraverso un nome precedentemente definito.\newline
 		
 		\paragraph{Load Balancing}
-		Attraverso il meccanismo interno di gestione della rete da parte di Docker riusciamo a gestire il carico in maniera bilanciato, andando a specificare come devono essere mappati i nostri nodi. Questo può servirci per capire come voler gestire l'Availability del nostro sistema, andando a istituire diverse policy.\newline
+		Attraverso il meccanismo interno di gestione della rete da parte di Docker riusciamo a gestire il carico in maniera bilanciato, andando a specificare come devono essere mappati i nostri nodi. Questo può servirci per capire come gestire l'Availability del nostro sistema, andando a istituire diverse policy.\newline
 		
 		\paragraph{Sicurezza}
 		Docker Swarm è sicuro di default, la comunicazione criptata tra i vari nodi viene istituita tramite identificazione. E' possibile istituire certificati di autenticazione locali o esterni. \newline
 		
 		\paragraph{Aggiornamenti}
-		Docker Swarm ci permette di poter fare degli aggiornamenti continui in maniera textbf{incrementale}, non c'è bisogno di aggiornare ogni cosa alla volta. Questo ci può permettere di evitare problemi di traffico su :
+		Docker Swarm ci permette di fare degli aggiornamenti continui in maniera textbf{incrementale}, non c'è bisogno di aggiornare ogni cosa alla volta. Questo ci può permettere di evitare problemi di traffico su :
 		\begin{itemize}
 		    \item Hosts
 		    \item Volumi
@@ -1612,39 +1595,33 @@
 		\end{itemize}
 		
 		\subsubsection{Concetti di Docker Swarm}
-		Uno swarm è una rete di nodi, dove all'interno vi è un hosts(fisico o virtuale), ognuno può essere:
+		Uno swarm è una rete di nodi, dove all'interno vi è un host (fisico o virtuale), che può essere:
 		\begin{itemize}
-		    \item Manager: Gestione dei membri e delle delegazioni. Riceve le descrizione per il deployment, può avere una distribuzione di unità di lavoro(task) su più nodi. Possono anche agire come Worker node ma questa policy di comportamento può essere modificata.
+		    \item Manager: Gestione dei membri e delle delegazioni. Riceve le descrizione per il deployment, distribuisce l'unità di lavoro (task) su più nodi. Possono anche agire come Worker node.
 		    \item Worker: Manda in esecuzione i servizi swarm. Riceve ed esegue i task, gli agenti su questi nodi ricevono e monitorano i task
 		    \item Entrambi.
 		\end{itemize}
 		Un nodo è un'istanza di sistema docker, tipicamente si ha un nodo per macchina, ma molti possono coesistere più macchine su un nodo.
 		
 		\subsection{Kubernetes}
-		Auto-riparante, gestione del guasto dei container e rileva il container difettoso:
+		Kubernetes è un software formato da più componenti software distribuite in nodi master e nodi worker che formano il cluster kubernetes.\\
+		Le componenti che si occupano di controllare l'esecuzione dei container applicativi sono raggruppate nel control plane. Il data plane raggruppa invece le componenti software coinvolte nelle funzionalità che gestiscono il carico di lavoro del cluster.\\
+		Il controllo del sistema avviene specificando un desired state (stato desiderato). Ogni partecipante si attiva per contribuire a mutare il sistema verso il desired state definito nel master.\\
+		
+		Kubernets ha funzionalità auto-riparanti: rileva e gestisce il guasto di un container, che può essere:
 		\begin{itemize}
 		    \item Container che non rispondono
 		    \item Controlli definiti dall'utente
 		\end{itemize}
-		Operazioni non supportate:
-		\begin{itemize}
-		    \item Creazione automatica di container.
-		    \item Nessun servizio integrato:
-		    \begin{itemize}
-		        \item Nessuna registrazione/controllo integrato.
-		        \item Gli utenti possono scegliere.
-		    \end{itemize}
-		    \item Nessuna configurazione macchina/ Nessuna auto-installazione
-		\end{itemize}
 		
 		\subsubsection{Componenti}
 		\begin{itemize}
-		    \item Nodi: Host che eseguono componenti containerizzati.
-		    \item Pods: Componenti del carico di lavoro dell'applicazione.
-		    \item Control Plane: API per la gestione dei container
-		    \item Service: Espone un'applicazione in esecuzione su uno o piu Pod. Rende l'applicazione accessibile attraverso la rete
+		    \item Nodi:  Un nodo è un server fisico oppure un server virtuale. Essi si coordinano per l'esecuzione dei carichi di lavoro, ovvero delle applicazioni containerizzate (container).
+		    \item Pods: Il pod è la risorsa che descrive l'unità elementare eseguibile su un nodo del cluster. Un pod raggruppa dei container che condividono le risorse e che vengono eseguiti sullo stesso nodo. Il pod si occupa di astrarre rete e storage al fine di poter essere spostato e replicato facilmente sui nodi del cluster, permettendo una forte scalabilità orizzontale
+		    \item Control Plane: L'attore centrale di un cluster in quanto a lui fanno riferimento tutti gli altri nodi per coordinarsi nell'esecuzione dei container.
+		    \item Service: Definisce come esporre dei pod su una rete interna o esterna.
 		\end{itemize}
-		\begin{figure}[h]
+		\begin{figure}[ht]
 		    \centering
 		    \includegraphics[width=0.8\textwidth]{SAC_B2_KubernetesComponents.png}
 		\end{figure}
@@ -1653,7 +1630,7 @@
 		Unita di carico di lavoro di base in Kubernetes, esistono più tipi di pod:
 		\begin{itemize}
 		    \item Pod contenitore singolo: caso più comune, viene eseguito un mapping 1 a 1 con i containers
-		    \item Pod contenitori multipli: Un pod contiene più applicazioni complesse, stretto accoppiamento dei contenitori
+		    \item Pod contenitori multipli: un singolo pod contiene più applicazioni complesse. Stretto accoppiamento dei contenitori
 		\end{itemize}
 		Template Pod:
 		\begin{verbatim}
@@ -1670,7 +1647,6 @@
 		                image: busybox
 		                command: ['sh', '-c', 'echo "Hello, Kube!" && sleep 3600']
 		            restartPolicy: OnFailure
-		# The pod template ends here}
 		\end{verbatim}
 		
 		Se viene modificato un modello pod, i pods vengono ricreati da un nuovo modello. Il modello Pod puo specificare i volumi, simile ai volumi Docker. Ogni pod ha un IP e i vari contenitori all'interno dello stesso pod possono comunicare utilizzando interfaccia di loopback.
@@ -1694,9 +1670,10 @@
 		
 		\newpage
 		\section{Serverless}
-		La filosofia serverless vede come componente principale, la possibilità di astrarre completamente la gestione e la manutenzione dei server, delegandola al provider, permettendo a chi sviluppa di dedicarsi completamente allo sviluppo software. Il provisioning e il deployment di tutto lo stack necessario per eseguire l’applicazione è completamente managed: chi sviluppa dovrà preoccuparsi di fornire una definizione
-		del software che sta scrivendo, che può essere un’immagine di un container o, a volte, anche meno.
-		Se facciamo un confronto con le architetture IaaS dove si ha un controllo completo sull'infrastruttura, l'approccio senza server è un ridimensionamento automatizzato monitorato dal provider. Si ha un arresto del servizio quando non viene utilizzato, e l'utente deve preoccuparsi solo dell'aggiornamento del proprio software.
+		La filosofia serverless vede come componente principale, la possibilità di astrarre completamente la gestione e la manutenzione dei server, delegandola al provider, permettendo così a chi sviluppa di dedicarsi unicamente a quello.\\
+		Il provisioning e il deployment di tutto lo stack necessario per eseguire l’applicazione è completamente managed: chi sviluppa dovrà preoccuparsi di fornire una definizione	del software che sta scrivendo, che può essere un’immagine di un container o, a volte, anche meno.\\
+		Se facciamo un confronto con le architetture IaaS dove si ha un controllo completo sull'infrastruttura, l'approccio senza server è un ridimensionamento automatizzato monitorato dal provider. Il servizio viene arrestato quando non utilizzato. L'utente deve quindi preoccuparsi solo dell'aggiornamento del proprio software.
+		
 		\begin{table}[ht]
 			\centering
 			\begin{tabular}{|l|l|l|}
@@ -1708,14 +1685,15 @@
 			Sicurezza   & Gestita dal provider     & A carico dell'utente    \\ \hline
 			\end{tabular}
 		\end{table}
+		
 		I principali vantaggi sono:
 		\begin{itemize}
 		    \item Gestione: Nessuna preoccupazione per la gestione e la governance dell'infrastruttura.
 		    \item Costi: Test, risoluzione dei problemi, controllo degli accessi esternalizzati al fornitore di servizi cloud.
 		    \item Scalabilità e disponibilità: Il ridimensionamento orizzontale è automatico ed elastico. La tolleranza ai guasti è un problema del fornitore di servizi cloud
-		    \item Riduzione al minimo della latenza: Le funzioni serverless in genere non operano da un singolo server di origine in modo che l'utente possa reindirizzato al server più vicino
+		    \item Riduzione al minimo della latenza: Le funzioni serverless in genere non operano da un singolo server di origine ma da molteplici server distribuiti in modo che l'utente possa reindirizzato a quello più vicino
 		    \item Riduzione della complessità del software: Le funzioni devono essere semplici per poter essere deployate serverless e ciò aiuta a risolvere i bug e rilasciare aggiornamenti
-		    \item Miglioramento della produttività del software: separazione di sviluppatori software da amministratori dell'infrastruttura
+		    \item Miglioramento della produttività del software: Separazione di sviluppatori software da amministratori dell'infrastruttura
 		\end{itemize}
 		Vi sono due categorie di servizi serverless:
 		\begin{itemize}
@@ -1727,36 +1705,37 @@
 		Tipicamente il backend fornisce un servizio ad altre applicazioni sotto forma di API messe a disposizione per gli sviluppatori. Alcuni esempi possono essere Cloud Databases, servizi di autenticazione e autorizzazione, notifiche push etc.
 		
 		\subsection{Function as a Service}
-		Se il software può essere suddiviso in funzioni ancora più piccole dei microservizi che esse servono allora queste possono essere deployate su server esterni in modo da separare lo stato dei server, e quindi affrancandosi dal bisogno di gestire l'infrastruttura, dalle funzioni stesse. Così facendo abbiamo una logica a grana ancora più fine in cui varie funzioni compongono un microservizi e, a loro volta, diversi microservizi costituiscono l'applicazione monolitica.
+		Se il software può essere suddiviso in funzioni ancora più piccole dei microservizi che esse servono allora queste possono essere deployate su server esterni in modo da separare lo stato dei server, e quindi affrancandosi dal bisogno di gestire l'infrastruttura.\\
+		Così facendo abbiamo una logica a grana ancora più fine in cui varie funzioni compongono un microservizio e, a loro volta, diversi microservizi costituiscono l'applicazione monolitica.\\
 		Le caratteristiche principali delle Functions sono:
 		\begin{itemize}
 		\item Stateless: Inerentemente parallele, sono facilmente scalabili
 		\item Effimere: Quando non utilizzate vengono dismesse. Non c'è persistenza
 		\item Event-driven: Determinate condizioni di attivazione scatenano un'azione che viene eseguita
 		\item Completamente gestite dal cloud provider
-		\item Modello di costi per uso: ad esempio la RAM viene misurata in quantità occupata al secondo
-		\item Business logic: Ci si concentra solo sulle funzionalità e non sull'infrastruttura
+		\item Modello di costi per uso (ad esempio la RAM viene misurata in quantità occupata al secondo)
+		\item Business Logic: Ci si concentra solo sulle funzionalità e non sull'infrastruttura
 		\end{itemize}
-		Gli utilizzi principali sono in quegli scenari in cui lo scaling automatico può fare la differenza, dove cioè ci sono grosse differenze di traffico tra il picco e il minimo oppure dove ci sono prolungati periodi di idle e workload incerti e variabili.
-		\\ Gli svantaggi sono legati a doppio filo ai vantaggi che porta questa tecnologia:
+		Gli utilizzi principali sono in quegli scenari in cui lo scaling automatico può fare la differenza, dove cioè ci sono grosse differenze di traffico tra il picco e il minimo oppure dove ci sono prolungati periodi di idle e workload incerti e variabili.\\
+		Gli svantaggi sono legati a doppio filo ai vantaggi che porta questa tecnologia:
 		\begin{itemize}
 		\item Performance: I server hanno bisogno di un certo tempo per essere avviati, una volta che sono stati interrotti per mancato traffico. Questo può portare ad un aumento di latenza che risulta critico in determinati contesti (es. trading).
-		\item Risorse limitate: Il provider potrebbe imporre dei limiti sulle risorse disponibili rappresentando un problema in scenario di High Processing Computing. Inoltre non tutte le funzioni sono compatibili con tutti i provider serverless.
+		\item Risorse limitate: Il provider potrebbe imporre dei limiti sulle risorse disponibili rappresentando un problema in scenari di High Processing Computing. Inoltre non tutte le funzioni sono compatibili con tutti i provider serverless.
 		\item Minor controllo: L'infrastruttura è completamente gestita dal provider
 		\item Monitoring e Debugging: Le metriche fornite dal provider potrebbero non essere sufficienti e il debug non praticabile
-		\item Sicurezza: Problema della monocultura: Quando viene trovata una vulnerabilità nell'infrastruttura del provider, questa intacca tutti i clienti che ne fanno uso
+		\item Sicurezza: Problema della monocultura, cioè quando viene trovata una vulnerabilità nell'infrastruttura del provider, questa intacca tutti i clienti che ne fanno uso
 		\item Vendor Lock-in: Non c'è standardizzazione tra i provider
 		\end{itemize}
 		
 		\subsection{OpenWhisk}
-		OpenWhisk promuove principalmente l’evitare il vendor lock-in, infatti è interamente open source (Apache license). Il modello di programmazione prevede la definizione di un trigger al quale è associata una regola che, qualora si verifichi, attiva un’azione.
+		OpenWhisk vuole evitare proprio il vendor lock-in, infatti è interamente open source (Apache license). Il modello di programmazione prevede la definizione di un trigger al quale è associata una regola che, qualora si verifichi, attiva un’azione.\\
 		Ogni azione ha delle caratteristiche abbastanza comuni:
 		\begin{itemize}
-		    \item Le azioni devono essere idempotenti: $\mathbf{T(T(x)) = T(x)}$
-		    \item Devono essere parallelizzabili
-		    \item Possono essere eseguite più volte rispetto allo stesso evento. Quindi l'ordine di esecuzione non è lo stesso dell'ordine di invocazione
-		    \item Ogni operazione non deve essere dipendente dall'azione(non vi è uno stato interno)
-		    \item Le azioni non sono atomiche
+		    \item Le azioni devono essere \textbf{idempotenti}: $\mathbf{T(T(x)) = T(x)}$
+		    \item Devono essere \textbf{parallelizzabili}
+		    \item Possono essere \textbf{eseguite più volte} rispetto allo stesso evento. Quindi l'ordine di esecuzione non è lo stesso dell'ordine di invocazione
+		    \item Ogni operazione deve essere \textbf{indipendente} dall'azione (non vi è uno stato interno)
+		    \item Le azioni \textbf{non} sono \textbf{atomiche}
 		\end{itemize}
 		Le azioni hanno un input e un output, hanno una struttura a dizionario (chiave-valore), in cui la chiave è una stringa e il valore è un JSON. Ogni azione è definita da:
 		\begin{itemize}
@@ -1777,9 +1756,9 @@
 		    \item Logs
 		    \item Valore di risposta
 		\end{itemize}
-		WEB actions
-		Azioni per generare applicazioni web. Possono operare ricevendo richieste HTTP, settando headers status code e gestire i cookies. Restituiscono un body HTML. La risposta è sempre un JSON object
-		Gestione delle risorse
+		\paragraph{WEB actions}
+		Azioni per generare applicazioni web. Possono operare ricevendo richieste HTTP, settando headers status code e gestire i cookies. Restituiscono un body HTML. La risposta è sempre un JSON object.
+		\paragraph{Gestione delle risorse}
 		Openwhisk supporta limiti per l'utilizzo delle risorse nelle funzioni. Possiamo imporre dei limiti relativi a:
 		\begin{itemize}
 		    \item Tempo di esecuzione
@@ -1788,12 +1767,12 @@
 		    \item Numero delle esecuzioni ricorrenti
 		    \item Activation rate
 		\end{itemize}
-		I trigger sono un canale nominativo di una classe di eventi che operano su una sorgente dati. Le regole definiscono un vincolo tra i trigger e le azioni che verranno eseguite.
-		\\Process model:
+		I trigger sono un canale nominativo di una classe di eventi che operano su una sorgente dati. Le regole definiscono un vincolo tra i trigger e le azioni che verranno eseguite.\\
+		Model Process disponibili:
 		\begin{itemize}
 		    \item NGINX: Gestisce le richieste in arrivo
-		    \item Kafka: coda di messaggi
-		    \item DOcker: Vengono eseguite delle funzioni
+		    \item Kafka: Coda di messaggi
+		    \item Docker: Vengono eseguite delle funzioni
 		    \item CouchDB: Log e storage di metadati
 		\end{itemize}
 		
@@ -1824,14 +1803,14 @@
 		    \item Richiste: 3M di invocazioni: 0.2\$ x(3-1(franchigia)) = 0.4\$
 		    \item Durata: 3M x 0.5GB x 1sec: 18.3\$
 		\end{itemize}
-		Layer:
+		\paragraph{Layer}:
 		Il contesto di esecuzione può essere già noto o una runtime specifica.
 		Gli eventi possono essere:
 		\begin{itemize}
 		    \item Custom: free format, inerenti per una determinata applicazione
 		    \item Service Event: La struttura in questo casa è legata a qualcosa che sta succedendo nella piattaforma Amazon. in questo caso sarà schematizzata con determinati tipi di indici di un JSON.
 		\end{itemize}
-		Il runtime decide quanti containers mandare in esecuzione in base alle richieste, anche qui le funzioni sono regolate da trigger. Stesso approccio arriva nelle Google Functions( Supporta JS, Python, GO, Java).
+		Il runtime decide quanti containers mandare in esecuzione in base alle richieste, anche qui le funzioni sono regolate da trigger. Stesso approccio arriva nelle Google Functions (supporta JS, Python, GO, Java).
 		
 		\subsection{Google Functions}
 		Supportano molti tipi di eventi:
@@ -1842,7 +1821,7 @@
 		    \item Cloud Firestore
 		    \item Firebase
 		\end{itemize}
-		Triggers
+		\paragraph{Triggers}
 		Possono essere invocati tramite righe di comando o console web.
 		Ogni evento in questo caso ha la sua struttura dati.
 		Il modello di costo è analogo ai sistemi precedenti quindi basato sempre sul tipo di runtime e al tempo di esecuzione. Per cui la qualità e l'efficienza del codice influisce molto sul costo dell'applicazione. 
