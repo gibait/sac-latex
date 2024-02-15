@@ -600,7 +600,8 @@
 		E' un'altra strategia di sincronizzazione che ha bisogno di un \textbf{coordinatore} che prenda la decisione finale e interagisca con ogni partecipante. Può esserci anche un approccio gerarchico in cui il coordinatore delega i nodi primari di interpellare i nodi finali.
 		Si basa su due fasi:
 		\begin{itemize}
-			\item Preparazione: in cui il coordinatore prepara tutte i partecipanti ad eseguire la transizione e attende che questi rispondano con l'esito dell'operazione.
+			\item Preparazione: in cui il coordinatore prepara tutte i partecipanti ad eseguire la transizione e attende che questi rispondano con l'esito dell'operazione. Tutti i nodi, quindi, aggiornano il proprio log interno (struttura dati usata per tracciare gli update ricevuti), ma non
+			aggiornano ancora gli indici: il cambiamento non è ancora visibile all’esterno
 			\item Scrittura: in cui, sulla base dei voti dei partecipanti, il coordinatore decide se continuare nella transazione o interromperla e avvisa i partecipanti dell'esito della decisione. I partecipanti seguiranno le indicazioni facendo o meno rollback a prima del commit.
 		\end{itemize}
 		\begin{figure}[ht]
@@ -611,10 +612,12 @@
 		Creato per la sincronizzazione di database distribuiti, fornisce un forte supporto di coerenza ma è relativamente costoso. Inoltre il rischio di una rollback aumenta il numero di repliche e il numero di messaggi scambiati.
 		
 		\paragraph{Gossip Protocol}
-		Un sistema di replicazione dati basato su scambi di informazioni con i vicini. L'approccio alla consistenza è dato dal fatto che ci sono almeno N repliche di ogni elemento, dove N può essere configurato e $\mathbf{N > 1}$ indica alta disponibilità dell'elemento.\\
+		Un sistema di replicazione dati basato su scambi di informazioni con i vicini. La disponibilità è dato dal fatto che ci sono almeno N nodi che replicano un elemento, dove N può essere configurato e $\mathbf{N > 1}$ indica alta disponibilità dell'elemento.\\
 		
-		Un esempio è Cassandra: quando un nodo riceve una query, identifica tutti i nodi che replicano l'elemento interessato attraverso una DHT (\textbf{Distributed Hash Table}). Invia quindi un aggiornamento della replica ai nodi trovati. In questo caso abbiamo una consistenza \textit{lazy} perché prima o poi la propagazione delle modifiche si estenderà a tutti i nodi.
+		Un esempio è Cassandra: quando un nodo riceve una query, identifica tutti i nodi che replicano l'elemento interessato attraverso una DHT (\textbf{Distributed Hash Table}). Invia quindi un aggiornamento della replica ai nodi trovati. In questo caso abbiamo una consistenza \textit{lazy} perché prima o poi la propagazione delle modifiche si estenderà a tutti i nodi.\\
 		
+		Quando avviene una scrittura, questa può arrivare su qualsiasi nodo che a sua volta la propagherà ai suoi vicini. I vicini risponderanno con un ACK quando avranno fatto la scrittura e, una volta inviato l’ACK, questi procederanno a spargere la scrittura sui propri vicini, e così via. Colui che inizia il procedimento può decidere un \textbf{quorum} di nodi che devono aver ritornato l’ACK per stabilire che la scrittura sia andata a buon fine, generalmente (N/2) + 1, dove N è il numero di vicini dell’iniziatore.
+				
 		\paragraph{Primario e secondario}
 		In questo sistema il server secondario può rispondere solo nel caso di failure del server primario, garantendo quindi availability. Alternativamente può essere utilizzato per fornire performance aggiuntive. Le operazioni di scritture devono essere inviate al server primario che procederà successivamente a sincronizzare i server secondari, con una periodicità variabile (da pochi minuti a diversi giorni). Tuttavia la copia nel server secondario viene utilizzata solo se la copia primaria non è disponibile.
 		
@@ -770,7 +773,21 @@
 		\end{figure}
 		
 		\begin{itemize}
-			\item Esperimenti con sistemi reali: vengono fatti quando il sistema è molto semplice e contenuto. In questi casi si rivela più conveniente di altri approcci.
+			\item Esperimenti con sistemi reali: vengono fatti quando il sistema è molto semplice e contenuto. In questi casi si rivela più conveniente di altri approcci.\\
+			Un test su di un sistema reale viene fatto, generalmente, come validazione dei calcoli teorici fatti a
+			priori.\\
+			Esistono vari tipi di test che si possono fare su un sistema fisico:
+			\begin{itemize}
+				\item Functional Testing: verifica il corretto funzionamento del programma con determinati risultati attesi. Ovviamente non consente di catturare
+				scenari particolari di malfunzionamento funzionale (race condition, ad esempio), o di workload
+				(lentezza, memory leak etc.)
+				\item Activity Testing: si testa il funzionamento sotto normali condizioni di lavoro (workload testing)
+				\item Endurance Testing: si testa il sistema sotto il carico massimo che può andare a sottostare (alla
+				kneeling zone). L'obiettivo è quello di avere dei dati per fare capacity planning in vista di carichi futuri o meno
+				\item Stress Testing: si va oltre la kneeling zone e si verifica dove sia il suo limite
+				\item Benchmark: si testa il sistema sotto carichi il più possibile standardizzati. Possiamo avere: \textbf{toy} benchmarks, piccoli algoritmi poco rappresentativi; \textbf{programmi reali} che possono comunque non essere disponibili per ogni piattaforma; benchmark \textbf{sintetici} basati sulle operazioni comuni nei software (ma comunque proni ad abusi); benchmark di \textbf{applicazioni reali} di problemi più rappresentativi delle operazioni aritmetiche o compilazione del kernel, in scenari completamente standardizzati.
+			\end{itemize}
+		
 			\item Esperimenti con modelli del sistema complesso:
 			\begin{itemize}
 				\item Modelli fisici: sono rappresentazioni “in scala” del sistema stesso. Vengono tipicamente
@@ -792,7 +809,8 @@
 				\end{itemize}
 			\end{itemize}
 		\end{itemize}
-		\newpage
+		
+
 		I parametri prestazionale di maggior interesse sono:
 		
 		\begin{itemize}
@@ -837,10 +855,52 @@
 		\subsubsection{Modelli Basati su Sistemi a
 			Coda}\label{modelli-basati-su-sistemi-a-coda}
 		
+		
 		In questi modelli si considerano i sistemi a coda (con
 		accodamento di richieste). Non serve che il modello ritorni un
-		risultato preciso, è sufficiente conoscere almeno l'\emph{ordine di grandezza
-			per sapere se è necessario scalare o meno}.
+		risultato preciso, è sufficiente conoscere almeno l'\emph{ordine di grandezza	per sapere se è necessario scalare o meno}.
+		
+		Immaginiamo un sistema composto da più parti: network, vari nodi frontend, vari nodi backend etc., ciascuna di queste parti è caratterizzata da determinati tempi di risposta, come quello della CPU, quello dello storage etc.
+		Se prendiamo una qualsiasi di queste risorse, è possibile modellarla in funzione delle sue variabili
+		rilevanti. Ciascuna di queste risorse, se modellata tramite la
+		teoria delle code, può essere rappresentata come una \textbf{coda di processi } in attesa di essere
+		processati e un servitore che li serve con una determinata latenza.
+		
+		\begin{figure}[ht]
+			\centering
+			\includegraphics[width=0.7\linewidth]{images/SAC_D1_queue}
+		\end{figure}
+		
+		Più risorse possono essere concatenate per rappresentare un sistema completo (un nodo, ovvero
+		una macchina fisica/virtuale, ad esempio).\\
+		
+		Per descrivere un singolo nodo del nostro sistema si utilizzano:
+		\begin{itemize}
+			\item Una coda
+			\item Il carico di lavoro. Questo è caratterizzato da:
+			\begin{itemize}
+				\item $\lambda_i$: Tasso di arrivo all'i-esima risorsa
+				\item $W_i$: Tempo di attesa medio nella coda all'i-esima risorsa
+				\item $S_i$: Tempo di servizio dell'i-esima risorsa. Reciproco del tasso di servizio $\mu$. Se, per processare una richiesta, ci si mette 1/10 di
+				secondo, allora, in media, si serviranno 10 richieste/secondo ($\mu$)
+			\end{itemize}
+		\end{itemize}
+		
+		Altre metriche rilevanti sono:
+		\begin{itemize}
+			\item $R_i = S_i + W_i$: tempo di risposta medio 
+			\item $X_i = max(\lambda, \mu)$: throughput medio
+			\item $N_iw$: numero di richieste in coda (\textit{waiting}) all'i-esimo nodo
+			\item $N_is$: numero di richieste che stanno venendo servite all'i-esimo nodo
+			\item $N_i = N_iw + N_is$: numero di richieste totali all'i-esimo nodo
+		\end{itemize}
+		
+		\paragraph{Legge dell'utilizzazione di Little}\label{little-law}
+		L’utilizzazione è la probabilità di avere il sistema “busy” ad un dato istante, ovvero impegnato a servire e/o con qualcosa in attesa di essere servito è:
+		\[\rho = \frac{\lambda}{\mu} \]
+		L'utilizzazione è quindi scrivibile come il tasso di arrivo sul tasso di uscita, ovvero la percentuale di tempo in cui il sistema è occupato.\\
+		
+		La legge di Little stima quante richieste vi sono 
 		
 		\paragraph{Notazione dei Sistemi a Coda}\label{notazione-dei-sistemi-a-coda}
 		I sistemi a coda vengono definiti mediante la seguente sintassi: \[
@@ -853,23 +913,29 @@
 		\begin{itemize}
 			\tightlist
 			\item
-			M : Processo di Poisson (M sta per \emph{Memory
+			M : Processo di \textbf{Poisson} (M sta per \emph{Memory
 				Less}, caratterizzato dall'assenza memoria). Viene solitamente
 			utilizzata per richieste non correlate tra loro, come
 			ad esempio le sessioni utente.
 			\item
-			D : Processo Deterministico
+			D : Processo \textbf{Deterministico}
 			\item
-			G: Processo Generico (solitamente Gaussiana o
+			G: Processo \textbf{Generico} (solitamente Gaussiana o
 			Log Normale, una Gaussiana con sopra un Logaritmico)
 		\end{itemize}
 		
 		Un processo Poissoniano è un processo nel quale gli arrivi non dipendono dallo stato, ovvero la probabilità di un arrivo è indipendente dalle altre.
+		Hanno due caratteristiche fondamentali:
 		\begin{itemize}
-			\item Il tasso con cui arrivano i clienti è indicato con \(\lambda\)
-			\item Il tasso con cui lasciano il sistema è indicato con \(\mu\)
-			\item L'utilizzazione è indicata con \(\rho\) ed è uguale a \(\rho = \frac{\lambda}{\mu}\)
+			\item Un tempo di inter-arrivo $\lambda$ che rappresenta  la probabilità con la quale il sistema	passa da uno stato ad un altro. Con “stato” si identifica il numero di richieste nel sistema, quindi la probabilità di arrivo di un pacchetto rappresenta la probabilità che il numero di
+			richieste presenti nel sistema passi da N a N + 1
+			\item Un tempo di servizio $\mu$, che rappresenta con che probabilità si passa da N a N - 1, ovvero la probabilità di uscita dal sistema.
+			\item Per la legge di Little, l'utilizzazione è quindi pari a $\rho = \frac{\lambda}{\mu}$ 
 		\end{itemize}
+		Il \textbf{tempo di risposta} è uguale a:
+		\[T_resp = \frac{1}{\mu - \lambda}\]
+		Graficamente è rappresentabile come una curva esponenziale con una determinata varianza e media.
+		Questo perché se aumento la capacità di processare ($\mu$), a parità di $\lambda$, il tempo di risposta cala ma se aumento il tasso di arrivo ($\lambda$), a parità di $\mu$, il tempo sale.
 		
 		\paragraph{M/M/1}\label{mm1}
 		Il tempo di risposta aumenta normalmente con l'aumento
@@ -878,7 +944,7 @@
 		
 		\paragraph{M/G/1}\label{mg1}
 				
-		In questi sistemi viene utilizzato il Teorema PASTA
+		In questi sistemi, con distribuzione poisson-iana di arrivo e \textbf{generica} di servizio, viene utilizzato il teorema PASTA
 		(Poisson Arrival See Time Average). Vengono introdotti diversi
 		parametri come il tempo di attesa medio \(E[W]\), il
 		tempo di risposta medio \(E[T]\) e il
@@ -892,11 +958,7 @@
 		E[T] = 1+\frac{1+C_v^2}{2}\frac{\rho}{1-\rho}
 		\]
 		Dove \(C_v^2\) è il coefficiente di variazione,
-		ovvero il \textbf{\emph{rapporto tra la deviazione standard e il valore
-				medio}}, il quale \textbf{\emph{descrive la variazione del tempo di
-				servizio}}. Per Poisson il valore di questo coefficiente è \(1\):
-		trattandosi di sistemi senza memoria, questi tengono conto solo dello
-		stato attuale del sistema.
+		ovvero il \textbf{\emph{rapporto tra la deviazione standard e il valore medio}}, il quale \textbf{\emph{descrive la variazione del tempo di	servizio}}. Per Poisson il valore di questo coefficiente è \(1\): trattandosi di sistemi senza memoria, questi tengono conto solo dello stato attuale del sistema. Per questo motivo possiamo affermare che il caso \textbf{M/M/1} è un caso particolare del più generale \textbf{M/G/1} con $C_v$ uguale ad 1.
 		
 			\paragraph{G/G/N}\label{ggn}
 		Sistema Generico, senza restrizioni sul tipo di distribuzione dei
@@ -936,13 +998,40 @@
 		
 		La disponibilità \(A\) (Availability) è data da: \[
 		A = \frac{MTTF}{MTBF} = 1 - \frac{MTTR}{MTBF}
-		\] Sulla base di questo fattore è possibile calcolare delle
-		classi di disponibilità.\\
+		\] 
+		Questa indica la probabilità che ad un istante $t$ il sistema stia funzionando correttamente. Oltre alla availability, che è una misura istantanea, abbiamo anche la \textbf{reliability}, che indica l'availability su un periodo di tempo sufficientemente lungo. Sulla base di questo fattore è possibile calcolare delle classi di disponibilità.\\
 		
-		La replicazione geografica può essere talvolta un metodo di \textbf{\emph{autoriparazione dei problemi senza personale}}. Nei sistemi come i datacenter la recovery in seguito a un guasto deve essere
-		fatta automaticamente, mentre il rilevamento degli errori può essere fatto
-		durante il funzionamento del sistema (\emph{concurrent detection}) o nei \textbf{\emph{momenti in cui le operazioni sono	sospese}} (preemptive detection).
-		
+		\paragraph{Fault tolerance}
+		La fault tolerance si basa su due principali concetti:
+		\begin{itemize}
+			\item Error detection: senza error detection, non si possono scoprire gli errori durante il
+			funzionamento di un sistema.\\
+			Vi sono due modi per fare error detection:
+			\begin{itemize}
+				\item Concurrent detection: viene fatto durante il funzionamento del sistema
+				\item Preemptive detection: viene fatta quando il servizio offerto dal sistema viene sospeso. Ad
+				esempio, se devo testare un hardware faulty, devo per forza spegnere l’hardware e installare le varie sonde che verificano lo stato dell’hardware, prima di procedere.
+			\end{itemize}
+			\item Recovery: come si rientra dai fallimenti all’occorrere di una failure. Prevede:
+			\begin{itemize}
+				\item Error handling: correzione dell’errore in maniera quanto più efficace e veloce possibile.
+				Sostanzialmente è il MTTR, quindi, generalmente, non è un processo istantaneo:
+				\begin{itemize}
+					\item Rollback: si ritorna all’utimo “safe state”
+					\item Rollforward
+					\item Compensation: si utilizza la ridondanza per gestire l’errore. Ad esempio, un load
+					balancer principale in heartbeat con un altro load balancer di backup, che viene messo
+					online automaticamente quando il load balancer principale va offline
+				\end{itemize}
+				\item Fault handling: prevenire il ripetersi degli errori
+				\begin{itemize}
+					\item Diagnosis
+					\item Isolation
+					\item Reconfiguration
+					\item Re-initialization
+				\end{itemize}
+			\end{itemize}
+		\end{itemize}
 		
 		Considerando invece \(N\) sottosistemi, ciascuno con una
 		probabilità di failure \(r_i\) la \textbf{probabilità
@@ -1828,19 +1917,19 @@
 		
 		\newpage
 		\section{Virtualized Storage}
-		La virtualizzazione dello storage è necessaria per incrementare la capacità di memoria unendone molteplici dischi poiché non esiste nessun disco che possa soddisfare lr richieste di exabyte di dati dei datacenter. Così facendo anche il troughput aumenta dato che molte unità possono operare in parallelo e suddividersi il carico. Infine, la virtualizzazione dello storage aumenta la disponibilità dei dati e riduce i costi.
+		La virtualizzazione dello storage è necessaria per incrementare la capacità di memoria: poiché non esiste nessun disco che abbia le capacità fisiche di soddisfare le ingenti richieste dati dei datacenter, si uniscono molteplici dischi. Così facendo anche il throughput aumenta dato che molte unità possono operare in parallelo e suddividersi il carico. Infine, la virtualizzazione dello storage aumenta la disponibilità dei dati e riduce i costi.\\
 		Possiamo classificare i metodi di virtualizzazione secondo due caratteristiche:
 		\begin{itemize}
 		\item Granularità 
-		\item Scope
+		\item Obiettivo
 		\end{itemize}
 		
 		\subsection{Granularità della virtualizzazione}
-		Il tipo di granularità dipende dall’altezza alla quale avviene la virtualizzazione. Il mapping può essere fatto al di sotto del filesystem (virt. a blocchi), col quale viene offerto un dispositivo a blocchi virtuale che si occupa della loro gestione, oppure al di sopra di esso (virt. file based), dove viene semplicemente astratta la locazione fisica del file.
+		Il tipo di granularità dipende dal livello al quale avviene la virtualizzazione. Il mapping può essere fatto al di sotto del filesystem (virt. a blocchi), col quale viene offerto un dispositivo a blocchi virtuale che si occupa della loro gestione, oppure al di sopra di esso (virt. file based), dove viene semplicemente astratta la locazione fisica del file.
 		
 		\subsection{Block Based}
-		Lo storage viene visto come un pool di blocchi logici su cui viene costruito il file system. Così facendo non è necessario che i dischi siano residenti sulla macchina ma possono essere distribuiti e remoti. Il file system spazierà quindi su diversi dischi in locazioni differenti. Occorre il supporto di quest'ultimo nella gestione di filesystems distribuiti.
-		Tipicamente si lavora con strumenti come SCSI, un linguaggio comandi per i dischi, incapsulati tramite protocolli di rete.
+		Lo storage viene visto come un \textbf{pool di blocchi logici} su cui viene costruito il file system. Così facendo non è necessario che i dischi siano residenti sulla macchina ma possono essere distribuiti e remoti. Il file system spazierà quindi su diversi dischi in locazioni differenti. Occorre il supporto di quest'ultimo nella gestione di filesystems distribuiti.
+		Tipicamente si lavora con strumenti come SCSI, un linguaggio comandi per i dischi, incapsulati tramite protocolli di rete:
 		\begin{itemize}
 		    \item TCP/IP
 		    \item FCP (Protocolli in canali fibra)
@@ -1851,19 +1940,20 @@
 		    \item LUN: Logic Unit Number.
 		    \item LBA: Logical Block Address.
 		\end{itemize}
+	
+		
 		Il primo rappresenta il nome del dispotivo (es. \verb*|sda|) mentre il secondo indica dove si trova il blocco all’interno di tale LUN. LBA potrà essere, ad esempio, la terna che identifica i settori in un disco rotativo.\\
 		
-		Per astrarre anche il tipo di disco utilizzato, si utilizza un altro livello di indirezione, infatti, dagli LBA fisici, vengono ricavati degli LBA logici, che verranno utilizzati effettivamente nella comunicazione. Occorre però tenere traccia delle associazioni logico-fisiche, da qui l'introduzione dei \textbf{metadati}: tabelle che contengono le associazioni LBA fisico - LBA logico. Grazie ai metadati è possibile implementare agilmente la ridondanza mappando lo stesso blocco logico in più blocchi fisici.\\
+		Per astrarre anche il tipo di disco utilizzato, si utilizza un altro livello di indirezione, infatti, dagli LBA fisici, vengono ricavati degli LBA logici, che verranno utilizzati effettivamente nella comunicazione. Occorre però tenere traccia delle \textbf{associazioni logico-fisiche}, da qui l'introduzione dei \textbf{metadati}: tabelle che contengono le associazioni LBA fisico - LBA logico. Grazie ai metadati è possibile implementare agilmente la \textbf{ridondanza} mappando lo stesso blocco logico in più blocchi fisici.\\
 		
-		Un’altra utilità dei metadati è quella di realizzare il \emph{load balancing} dell’utilizzo dei dischi fisici: se ho un file contiguo, posso mappare i blocchi logici contigui su dischi fisici diversi. In questo modo, il blocco logico contiguo viene letto, sostanzialmente, in
-		parallelo, perché presente su dispositivi fisici diversi.\\
+		Un’altra utilità dei metadati è quella di realizzare il \emph{load balancing} dell’utilizzo dei dischi fisici: se ho un file contiguo, posso mappare i blocchi logici contigui su \textbf{dischi fisici diversi}. In questo modo, il blocco logico contiguo viene letto, sostanzialmente, in
+		parallelo, perché presente su dispositivi fisici diversi e quindi accessibili \textbf{parallelamente}.\\
 		
-		Ovviamente, questi metadati sono importantissimi, poiché rappresentano
-		l’informazione (senza metadati, gli id fisici sono inutili, poiché il fs ragiona per indirizzi logici), pertanto vanno anch’essi ridondati.
+		Ovviamente, questi metadati sono importantissimi, poiché rappresentano l’informazione (senza metadati, gli id fisici sono inutili, poiché il fs ragiona per indirizzi logici), pertanto vanno anch’essi ridondati e tenuti al sicuro.\\
 		
-		\subsection{Migliorare le prestazioni}
 		Attraverso un sistema RAID possiamo avere delle performance maggiori, in quanto il throughput raddoppia, per cui il tempo di risposta si dimezza.\\
-		 
+		
+		\paragraph{LVM}
 		Mediante la tecnica LVM, Logical Volume Management, usata in sistemi linux per mappare eventi logici in estensioni fisiche (blocchi su dischi), si costruisce un file system con vari LE (Logical Extents) collegati a dei PE (Physical Extents) distributi su dischi diversi, per bilanciare meglio il carico. 
 		I suoi concetti chiave sono:
 		\begin{itemize}
@@ -1872,16 +1962,22 @@
 		    \item LV: Volume logico.
 		    \item LE: Estensione logica.
 		\end{itemize}
+		
+		\begin{figure}[ht]
+			\centering
+			\includegraphics[width=0.7\linewidth]{images/SAC_B5_blockbased}
+		\end{figure}
+		
 		E' possibile avere due approcci per accedere ai metadati:
 		\begin{itemize}
-		    \item Accesso trasparente: La richiesta viene fatta per il Logical Extent e sarà compito del Softare Defined Storage tradurla in PE
-		    \item Accesso ai metadati tramite API: I file system interrogano i metadati per un dato LE e sarà compito loro effettuare la traduzione.
+		    \item Accesso \textbf{trasparente}: La richiesta viene fatta per il Logical Extent e sarà compito del Software Defined Storage tradurla in PE
+		    \item Accesso ai metadati tramite \textbf{API}: I file system interrogano i metadati per un dato LE e sarà compito loro effettuare la traduzione
 		\end{itemize}
 		Se il primo approccio è meno oneroso per i file system del secondo, è penalizzato in quanto a scalabilità.\\
 		
-		Alcune features facilmente implementabili nell'approccio block-based:
+		Alcune features facilmente implementabili grazie all'approccio block-based:
 		\begin{itemize}
-		    \item Snapshotting: Attraverso il sistema a blocchi è facile implementare gli snapshot: tutti i blocchi di un file vengono marchiati come copy-on-write e le scritture successive produrranno una copia del file. Questa operazione avviene solo sui metadati non sui blocchi effettivi del disco.
+		    \item Snapshotting: Attraverso il sistema a blocchi è facile implementare gli \textbf{snapshot}. Infatti, se tutti i blocchi di un file vengono marchiati come copy-on-write, le scritture successive produrranno una copia del file. Questa operazione avviene solo sui metadati e non sui blocchi effettivi del disco.
 		    \item De-duplicazione dei dati: Evitare copie dello stesso blocco, meccanismo intrinseco dello snapshotting, che possono far risparmiare ingenti quantità di memoria.
 		\end{itemize}
 		
@@ -1897,7 +1993,7 @@
 		E' un sistema molto veloce basato su RPC (Remote Procedure Call). Ha visto diverse release e numerose funzionalità sono state aggiunte negli anni.
 		
 		\subsubsection{SMB/CIFS}
-		Un filesystem completamente diverso, che permette di accedere a delle risorse, con relativi protocolli, di vario genere (Stampanti, Porte, Files).
+		Un filesystem estremamente più completo, che permette di accedere a delle risorse, con relativi protocolli, di vario genere (Stampanti, Porte, Files).
 		
 		\subsection{Obiettivi virtualizzazione dello storage}
 		Con obiettivo della virtualizzazione si intende la dimensione e la visiblità dello storage che vogliamo avere. Si declina in tre principali infrastrutture:
@@ -1910,40 +2006,41 @@
 		Si tratta di un disco esterno collegato a un host. Le interazioni si basano su protocolli non di rete (ad esempio il disco può essere collegato mediante una periferica USB).
 		Quando il disco viene collegato all'host, viene preso in carico dal sistema operativo attraverso i driver. I volumi logici sono tipicamente visibili localmente ma possono essere esposti anche sulla rete. 
 		\subsubsection{NAS}
-		Non vi è bisogno di collegare direttamente il server che deve fruire dello storage allo storage stesso. Il server che necessita di accedere allo storage non deve essere collegato direttamente a quest'ultimo ma la comunicazione avviene mediante lo stack TCP/IP. Il controller del disco non è più il server che deve fruire dello storage, ma sarà il sistema operativo presente sul NAS stesso, che esporrà delle interfacce per accedervi. L’accesso remoto può essere fatto sia in modo block-based che in modo filesystem-based.
+		Non vi è bisogno di collegare direttamente il server che deve fruire dello storage allo storage stesso perché la comunicazione avviene mediante lo stack TCP/IP. Il controller del disco non è più il server che deve fruire dello storage, ma sarà il sistema operativo presente sul NAS stesso, che esporrà delle interfacce per accedervi. L’accesso remoto può essere fatto sia in modo block-based che in modo filesystem-based.
 		I componenti principali sono:
 		\begin{itemize}
-		    \item Memorizzazione: viene effettuato attraverso dischi, SSD o HDD.
+		    \item Memorizzazione: viene effettuata attraverso dischi, SSD o HDD.
 		    E' possibile scegliere quale tipo di disco utilizzare anche in base alla metrica UBER.\\
-		    UBER è una metrica per il tasso di occorrenza di errori di dati, pari al numero di errori di dati per bit letti durante l'intera vita di un SSD. Matematicamente:
+		    UBER è una metrica per il tasso di occorrenza di errori di dati, pari al numero di errori di dati per bit letti durante l'intera vita di un SSD. Si calcola:
 		    \begin{center}
 		     $ UBER= \frac{number of data errors}{number of bits read}$
 		    \end{center}
+		    Gli SSD hanno un tasso UBER più alto di quello dei dischi, cioè una maggiore probabilità di perdita dei dati di failure.
 		    \item Controller: RAID per gestire i dischi collegati in serie. I controller RAID possono essere sia software che hardware. Nel primo caso tipicamente si usano degli standard open e i dischi sopravvivono alla rottura del controller mentre nel primo caso la rottura porterebbe alla perdita dei dati sui dischi.
-		    \item Interfacce di rete: costituite da varie schede di rete ad alta velocità capaci di supportare anche connesione a 10Gbps.
+		    \item Interfacce di rete: costituite da varie schede di rete ad alta velocità capaci di supportare anche connessioni a 10Gbps.
 		\end{itemize}
 		\subsubsection{SAN}
-		Questo tipo di reti possono avere dati di archiviazione fino all'ordine di Exabyte. Vi possono essere più livelli:
+		Questo tipo di reti possono avere archiviazione nell'ordine degli Exabyte. Vi sono essere più livelli:
 		\begin{itemize}
-		    \item Host Layer: Il frontend che accede ai dati, che generalmente viene replicato (i.e. una rest api che accede ai dati) e che rappresenta l’endpoint per accedere alla SAN
+		    \item Host Layer: Il frontend che accede ai dati, generalmente viene replicato (i.e. una rest api che accede ai dati), e che rappresenta l’endpoint per accedere alla SAN
 		    \item Fabric Layer: La fibra ottica che mette in collegamento gli switch e i router
 		    \item Storage Layer: Dischi di archiviazione pensati per esporre i dati in maniera block-based e in modo estremamente flessibile e reliable RAID e JBOD. L’accesso è tipicamente derivante da protocolli simil-SCSI.
 		\end{itemize}
 		\subsection{Software defined storage}
-		La vera sfida di questa tipologia di archiviazione è la \text{disponibilità} e l'affidabilità dei dati, i quali devono essere sempre disponibili e non possono essere persi o danneggiati.\\
-		Inoltre devono essere anche gestibili e scalabili, quindi devono essere recuperati in modo in efficiente e condivisi tra loro, ma a causa della loro dimensione il sistema deve anche essere capace di gestire il gran numero di richieste.
-		All’interno dello storage pool avrò dischi diversi di vendor differenti con molteplici filesystem, motivo per il quale serve un layer che astragga la complessità e mi permetta di gestire SAN estremamente eterogenee. Concetto di hardware independence\\
+		La vera sfida di questa tipologia di archiviazione è la \text{disponibilità} e l'affidabilità dei dati, i quali devono essere sempre disponibili e non possono venir persi o danneggiati.\\
+		Inoltre è richiesto che siano anche gestibili e scalabili, quindi devono essere recuperati in modo in efficiente e condivisi tra loro, ma a causa della loro dimensione il sistema deve anche essere capace di gestire il gran numero di richieste.\\
+		
+		All’interno dello storage pool avrò dischi diversi di vendor differenti con molteplici filesystem, motivo per il quale serve un layer che astragga la complessità e mi permetta di gestire SAN estremamente \textbf{eterogenee}. Alla base vi è il concetto di hardware independence.\\
 		Le funzionalità chiave per fornire gli attributi richiesti da questo tipo di archiviazione sono:
 		\begin{itemize}
 		    \item Automazione: cioè la gestione semplificata che riduce i costi di manutenzione dell'infrastruttura di storage.
 		    \item Interfacce standard: tramite API per gestione, provisioning e manutenzione di dispositivi e servizi di archiviazione.
-		    \item Modalità di accesso: Interfacce Block, File e Object.
-		    \item Scalabilità.
+		    \item Modalità di accesso: interfacce Block, File e Object.
+		    \item Scalabilità
 		\end{itemize}
 		Alcuni esempi sono:
 		\subsubsection{Ceph}
-		Ceph è un filesystem che abilita SDS in maniera estremamente semplice. Permette di distribuire i dati su più dischi mediante l’algoritmo
-		CRUSH (hash-based load balancing). Da un punto di vista architetturale, Ceph riutilizza il concetto di metadati (come in block-based) e introduce il concetto di journaling, quindi tutte le operazioni sul filesystem (distribuito) sono atomiche.
+		Ceph è un filesystem che permette SDS in maniera estremamente semplice. Consente di distribuire i dati su più dischi mediante l’algoritmo	CRUSH (hash-based load balancing). Da un punto di vista architetturale, Ceph riutilizza il concetto di metadati (come in block-based) e introduce il concetto di \textbf{journaling}, quindi tutte le operazioni sul filesystem (distribuito) sono atomiche.\\
 		Due concetti fondamentali:
 		\begin{itemize}
 		\item Meta Data Server distribuito con supporto al bilanciamento del carico per le operazioni di apertura file, creazione e lista directory
@@ -1953,56 +2050,73 @@
 		\newpage
 		\section{Software Defined Networks}
 		\subsection{NFV: Network Function Virtualization}
-		Il termine Network Functions Virtualization (NFV) nell'ambito delle reti di telecomunicazioni indica un approccio architetturale che sfrutta le tecnologie IT per virtualizzare intere classi di funzioni dei nodi di rete come blocchi elementari che possono essere interconnessi per implementare servizi di comunicazione.
-		Una funzione di rete virtualizzata consiste in una o più macchine virtuali che gestiscono diversi software e processi su server standard ad alta capacità, switch e dispositivi di memoria o anche su un'infrastruttura in cloud, invece di utilizzare differenti dispositivi hardware per ogni funzione di rete.
-		In questo modo, elaborazioni tradizionalmente residenti nei nodi di rete possono essere eseguite in modo centralizzato sulla macchina virtuale, alleggerendo il carico elaborativo sui nodi di rete che assumono, rispetto alla funzione virtualizzata, il ruolo di attuatori.\\
-		L'approccio è mirato sia a ridurre il costo dei nodi di rete (per la minore complessità richiesta o in casi estremi eliminando la necessità del nodo fisico stesso) che a integrarsi in una gestione di rete di tipo SDN, contesto in cui le NFV possono essere usate in modo sinergico.
-		\\L'obiettivo principale è quello di instradamento, definizione policy di routing complesse che si possano adattare bene a scenari di virtualizzazione, ricordiamo infatti che la VM può comunicare utilizzando apparati fisici o bridge virtuali, o anche switch e router.
-		\newpage
+		
+		NFV serve ai grandi ISP per ridurre i costi OPEX e CAPEX, utilizzando hardware più generico, ma comunque dedicato, usando sistemi operativi standard per realizzare le funzioni di routing e switching che servono.
+		L’obiettivo, quindi, è quello di abbandonare i router e gli switch dedicati (hardware verticali), e utilizzare macchine con hardware più \textit{off the shelf}. Ovviamente questo
+		concetto non è applicabile a tutti gli scenari (IXP e backbone richiedono hardware	dedicato).\\
+		
+		Risulta interessante quando si ha uno scenario di \textbf{virtualizzazione}: dal momento in cui le macchine virtuali devono parlare tra di loro, posso virtualizzare un router che le colleghi. A questo punto, anche i \textbf{dispositivi di rete} diventano virtuali.
+		
 		\subsection{SDN: Software defined network}
+		SDN si rivolge più verso il mondo cloud-oriented, dove l’accento è più sul problema della \textbf{gestibilità}. Quando si lavora con un datacenter vi sono migliaia di macchine fisiche che 	gestiscono milioni di macchine virtuali che hanno necessità di automatizzazione: regole	NAT per garantire l’accesso alle macchine virtuali, regole di indirizzamento che
+		cambiano se le VM vanno su o giù etc.\\
+		Avendo hardware proprietario, tali configurazioni cambiano per ogni vendor, è quindi necessario uno standard (per rispettare lo SLA, molto importante).
+		Servono quindi dei dispositivi di rete che siano cloud-enabled, all’interno del	datacenter: la logica di switching e di routing viene svincolata da hardware proprietario per essere quanto più flessibile e accessibile.
+		
 		\subsubsection{Motivazioni}
-		Attraverso la definizione di reti dal software, si cerca di soddisfare alcuni requisiti fondamentali:
+		Attraverso la definizione di reti definite dal software, si cerca di soddisfare alcuni requisiti fondamentali:
 		\begin{itemize}
 		    \item Condivisione delle risorse.
-		    \item Isolamento delle prestazioni: i flussi di traffico non devono interferire, le soluzioni possono essere uno switch capace di gestire delle VLAN. E' necessario anche poter gestire un carico di lavoro variabile che può essere altamente variabile. 
-		    \item Supporto alla ridondanza: La ridondanza è necessaria per la tolleranza ai guasti per cui è importante implementare alcuni algoritmi di gestione come alberi di copertura con un solo percorso disponibile che evita dei loop. 
-		    Questo obiettivo da soddisfare può andare in conflitto con altri, come l'isolamento delle prestazioni o la condivisione delle risorse.
+		    \item Isolamento delle prestazioni 
+		    \item Supporto alla ridondanza
 		    \item Riduzione dei costi OPEX e CAPEX tramite dispositivi hardware off-the-shelf e non più dedicati, quindi costosi.
 		\end{itemize}
-		L'obiettivo critico è quello di adattarsi a scenari che possono cambiare in maniera molto dinamica e che in caso di problemi repentini il sistema cloud deve essere capace di gestirli automaticamente.\\
+		L'obiettivo critico è quello di adattarsi a scenari che possono cambiare in maniera molto dinamica, e in caso di problemi il sistema cloud debba gestirli repentinamente in modo automatico.\\
 		Alcune aree critiche rimangono:
 		\begin{itemize}
 		    \item Interazione controller: pacchetti inviati con grande latenza.
 		    \item Problemi di prestazioni del piano dati: tabelle grandi e predicati complessi.
-		    \item Scalabilità del controller: può diventare un colo di bottiglia e l'utilizzo di più controller necessità l'implementazione di una coordinazione.
+		    \item Scalabilità del controller: può diventare un collo di bottiglia e l'utilizzo di più controller necessità l'implementazione di una coordinazione.
 		    \item Ridondanza del controller.
 		\end{itemize}
 		Per capire meglio come funzionano le SDN occorre definire due elementi principali:
 		\begin{itemize}
-		\item Data Plane: Dove avviene la manipolazione dei pacchetti. Nel caso di un router è la parte che si occupa del forwarding dei pacchetti
-		\item Control Plane: Dove vengono prese le decisioni per la gestione dei pacchetti. Nel caso di un router è la parte che si occupa dell'instradamento dei pacchetti
+		\item \textbf{Data} Plane: Dove avviene la manipolazione dei pacchetti. Nel caso di un router è la parte che si occupa del forwarding dei pacchetti
+		\item \textbf{Control} Plane: Dove vengono prese le decisioni per la gestione dei pacchetti. Nel caso di un router è la parte che si occupa dell'instradamento dei pacchetti
 		\end{itemize}
 		Il Software Defined Networking (SDN) è un’architettura per la realizzazione di reti di telecomunicazioni nella quale il piano di controllo della rete e quello di trasporto dei dati sono separati logicamente.\\
 		Questa separazione logica permette da un lato la possibilità di gestire via software tutta la rete da un unico controller, garantendo così una maggiore scalabilità e standard di affidabilità e sicurezza della rete più elevati, dall’altro quella di utilizzare indifferentemente apparati prodotti dalle diverse aziende che non conteranno più al loro interno le funzioni di gestione favorendo, così, la nascita di una rete dinamica e non più legata al larghissimo numero di protocolli differenti attualmente utilizzati.\\
+		
+		Il control plane, cioè i controller SDN, comunicano con gli applicativi tramite la \textbf{northbound API}, tipicamente REST o BGP, OSPF per sistemi legacy.
+		La comunicazione con il data plane avviene invece mediante la \textbf{southbound API} di cui OpenFlow rappresenta lo standard de facto.\\
+		Ad esempio il controller ascolta le modifiche alle macchine virtuali sulla northbound API e procede ad inoltrare i comandi tramite la southbound API agli apparati di rete.
+		
 		SDN fornisce alla NFV i vantaggi di una connessione programmabile tra le funzioni di rete virtualizzate; la NFV, invece, mette a disposizione dell’SDN la possibilità di implementare le funzioni di rete tramite software su server COTS (Commercial off-the-shelf). Si ha, così, la possibilità di virtualizzare il controller SDN implementandolo su di un cloud che può essere facilmente migrato in qualsiasi posizione in base alle esigenze della rete.
+		
 		\subsubsection{Switch SDN}
-		Uno switch SDN è un programma software o un dispositivo hardware che inoltra i pacchetti in un ambiente SDN. Deve supportare i protocolli SDN. Il primo e il più noto protocollo SDN è OpenFlow. Pertanto, uno switch SDN viene spesso chiamato anche switch OpenFlow. Esistono anche altri protocolli SDN sviluppati dai fornitori di switch SDN, come OpFlex, NETCONF, BGP (Border Gateway Protocol), XMPP (Extensible Messaging and Presence Protocol), ecc.\\
-		Funzionamento\\
+		Uno switch SDN è un programma software o un dispositivo hardware che inoltra i pacchetti in un ambiente SDN. Deve supportare i protocolli SDN. Il primo e il più noto protocollo SDN è OpenFlow. Pertanto, uno switch SDN viene spesso chiamato anche switch OpenFlow. Esistono anche altri protocolli SDN sviluppati dai fornitori di switch SDN, come OpFlex, NETCONF, BGP (Border Gateway Protocol), XMPP (Extensible Messaging and Presence Protocol), ecc.
+		
+		\paragraph{Funzionamento}
 		Il piano di controllo (routing di alto livello) è disaccoppiato dall'hardware dello switch SDN, ma è implementato nel controller SDN (un'applicazione in esecuzione sul server o da qualche parte), che si trova tra i dispositivi di rete e le applicazioni.
-		Ogni switch SDN nel modello SDN è programmabile dal controller SDN attraverso i protocolli SDN. Le comunicazioni tra applicazioni e dispositivi avvengono attraverso il controller SDN.\\
-		Uno switch SDN è composto da porte e tabelle. I pacchetti arrivano e lasciano lo switch attraverso le porte. Le tabelle sono costituite da righe contenenti un classificatore e un insieme di azioni. Quando uno switch SDN riceve un pacchetto che non ha una riga corrispondente nella tabella, comunica con il controller SDN e chiede cosa fare con questo pacchetto. Il controller può scaricare un flusso sullo switch, che include il primo classificatore che meglio corrisponde al pacchetto e le azioni.
-		Le azioni gestiscono il trattamento del pacchetto, che può essere l'inoltro alle porte, l'incapsulamento e l'inoltro al controllore, l'eliminazione del pacchetto o l'invio alla normale pipeline di elaborazione. Una volta che i predicati sono stati scaricati nella tabella degli switch, questi vengono processati in autonomia. Il predicato del matching può usare molti campi per stabilire la regola: può agire su campi che vanno dal livello più basso dello stack TCP/IP fino ai protocolli di trasporto. Uno switch SDN può, quindi, gestire qualsiasi livello dello stack, rendendolo molto efficace.\\
-		Southbound API \\
+		Ogni switch SDN nel modello SDN è programmabile dal controller SDN attraverso i protocolli SDN.
+		
+		Uno switch SDN è composto da \textbf{porte} e \textbf{tabelle}. I pacchetti arrivano e lasciano lo switch attraverso le porte. Le tabelle sono costituite da righe contenenti un \textbf{classificatore} e un insieme di azioni. Quando uno switch SDN riceve un pacchetto che non ha una riga corrispondente nella tabella, comunica con il controller SDN e chiede cosa fare con questo pacchetto. Il controller può scaricare un flusso sullo switch, che include il primo classificatore che meglio corrisponde al pacchetto e le azioni.\\
+		
+		Le \textbf{azioni} gestiscono il trattamento del pacchetto, che può essere l'inoltro alle porte, l'incapsulamento e l'inoltro al controllore, l'eliminazione del pacchetto o l'invio alla normale pipeline di elaborazione. Una volta che i predicati sono stati scaricati nella tabella degli switch, questi vengono processati in autonomia.\\
+		Il predicato del matching può usare molti campi per stabilire la regola: può agire su campi che vanno dal livello più basso dello stack TCP/IP fino ai protocolli di trasporto. Uno switch SDN può, quindi, gestire qualsiasi livello dello stack, rendendolo molto efficace.
+		
+		\paragraph{Southbound API}
 		I messaggi che possono essere inviati tramite la southbound API sono:
 		\begin{itemize}
 		\item Controller to switch: Messaggi di controllo e configurazione
 		\item Messaggi asincroni da switch a controller: Messaggi inviati quando è necessario l'intervento del control plane
 		\item Messaggi simmetrici: Messaggi usati per controllo della salute dei dispositivi
 		\end{itemize}
-		Vantaggi SDN\\
+		
+		\subsection{Vantaggi SDN}
 		Un vantaggio generale dell'uso degli switch SDN è la facilità di controllo e configurazione del flusso. Con gli switch SDN, non è necessario recarsi presso le postazioni dello switch e accedere alla riga di comando per configurarlo. 
 		È possibile controllare e programmare in remoto più switch attraverso un unico controller SDN che utilizza il protocollo SDN e fornisce API per gli switch SDN. 
-		Altri vantaggi sono che sarà più facile effettuare il bilanciamento del carico anche a velocità di dati elevate e il traffico potrà essere isolato senza bisogno di VLAN, poiché il controller SDN funziona per rifiutare determinate connessioni.
+		Inoltre, sarà più facile effettuare il bilanciamento del carico anche a velocità di dati elevate e il traffico potrà essere isolato senza bisogno di VLAN, poiché il controller SDN permette di rifiutare determinate connessioni.
 		
 		\newpage
 		\section{Software Defined Data Center}
@@ -2010,15 +2124,21 @@
 		\subsection{Punti di Vista}
 		Ci sono diversi aspetti che un cloud provider deve tenere in considerazione, ciascuno di questi appartenente a punti di vista differenti:
 		\paragraph{Utente}
-		Un utente deve avere la percezione di avere una macchina per se. La scalabilità del sistema messa a disposizione dell'utente deve essere istantanea: in pochi istanti deve essere possibile per l'utente avere a disposizione altre macchine. Il sistema deve garantire una certa sicurezza: sui data center possono essere messi dati sensibili, pagando si deve essere certi che un team di persone competenti (con privilegi diversi) mantengano la piattaforma sicura. Il servizio offerto deve essere affidabile: le risorse sempre disponibili (ridondanza dei dati) e il downtime di pochi minuti all'anno.\\
+		\begin{itemize}
+			\item Un utente deve avere la percezione di avere una macchina per se
+			\item La scalabilità del sistema messa a disposizione dell'utente deve essere istantanea: in pochi istanti deve essere possibile per l'utente avere a disposizione altre macchine
+			\item Il sistema deve garantire una certa sicurezza: sui data center possono essere messi dati sensibili, pagando si deve essere certi che un team di persone competenti (con privilegi diversi) mantengano la piattaforma sicura
+			\item Il servizio offerto deve essere affidabile: le risorse sempre disponibili (ridondanza dei dati) e il downtime di pochi minuti all'anno
+		\end{itemize}
 		\paragraph{Ingegneristico}
-		L'infrastruttura deve essere gestita sotto gli aspetti software e hardware, in particolare in termini di consumo energetico, raffreddamento e sicurezza (persone che hanno accesso ai sistemi).
+		L'infrastruttura deve essere gestita sotto gli aspetti software e hardware, in particolare in termini di consumo energetico, raffreddamento e sicurezza (personale che ha accesso fisico ai sistemi).
 		\begin{itemize}
 		    \item Software: È necessario un sistema di monitoraggio per conoscere le macchine accese e le risorse utilizzate, in modo da sapere quanto far pagare i servizi.
-		    \item Harware: I nodi di calcolo (host) vengono raggruppati in racks che possono essere raggruppati in
+		    \item Hardware: I nodi di calcolo (host) vengono raggruppati in racks che possono essere raggruppati in
 		    pods, dei container di racks (generalmente spostati usando dei camion) che presentano tre cavi: 
 		    per la rete, energia e per il raffreddamento. I pods possono essere visti anche come dei mini data center, e rappresentano un'alternativa alla struttura gerarchica classica del data center tradizionale.
 		\end{itemize}
+		
 		\subsubsection{Data Center Cloud}\label{data-center-cloud}
 		Oggigiorno molti data center stanno migrando verso la struttura cloud. Ci si aspetta che un data center cloud rispetti determinati criteri e
 		caratteristiche:
@@ -2032,56 +2152,37 @@
 		\item Internet-based
 		\end{itemize}
 		\subsection{Infrastruttura}
-		Il data center viene organizzato in blade systems, composti da un certo numero (solitamente 4) di blade (l'unità di computazione vera e propria) inserite all'interno di un chassis. Se nella blade troviamo componenti come RAM, CPU e hardware di rete, nello chassis si trova l'alimentazione, il sistema di raffreddamento e quello di monitoraggio. I blade systems vengono organizzati in racks, delle sorte di armadi che presentano degli switch utilizzati per l'interconnessione di più blade systems tra loro e il resto del datacenter. Nei racks sono presenti due tipi di switch:
+		Il data center viene organizzato in \textbf{blade systems}, composti da un certo numero (solitamente 4) di blade (l'unità di computazione vera e propria) inserite all'interno di uno \textbf{chassis}. Se nella blade troviamo componenti come RAM, CPU e hardware di rete, nello chassis si trova l'alimentazione, il sistema di raffreddamento e quello di monitoraggio. I blade systems vengono organizzati in \textbf{racks}, delle sorte di armadi che presentano degli switch utilizzati per l'interconnessione di più blade systems tra loro e il resto del datacenter. Nei racks sono presenti due tipi di switch:
 		\begin{itemize}
 		\tightlist
-		\item top-of-rack: per la connessione di più elementi nello stesso rack
+		\item top-of-rack: per la connessione degli elementi appartenenti allo stesso rack
 		\item end-of-row: per la connessione di racks sulla stessa fila
 		\end{itemize}
-		Le blades montano sistemi di storage di piccole
-		dimensioni NVRAM o SSD (generalmente intorno ai 500Gb,
-		1Tb) utilizzati per il caching dei dati e per far girare
-		l'hypervisor, mentre l'unità di storage vera e propria
-		dei data center consiste in una Storage Area Network
-		(SAN), uno storage persistente che
+		Le blades montano sistemi di storage di piccole	dimensioni NVRAM o SSD (generalmente intorno ai 500Gb,	1Tb) utilizzati per il caching dei dati e per far girare l'hypervisor, mentre l'unità di storage vera e propria dei data center consiste in una Storage Area Network (SAN), uno storage persistente che
 		mantiene le copie delle immagini delle VM.
 		
-		\hypertarget{data-center-network}{%
-		\subsubsection{Data Center Network}\label{data-center-network}}
-		
-		\hypertarget{struttura}{%
-		\paragraph{Struttura}\label{struttura}}\mbox{}\\
-		La rete di un datacenter presenta una topologia ad albero nel
+		\subsubsection{Data Center Network}\label{data-center-network}
+		\paragraph{Struttura}\label{struttura}
+		La rete di un datacenter presenta una topologia ad albero nella
 		quale è possibile individuare diversi livelli (dal basso all'alto):
+		
+		\begin{figure}[ht]
+			\centering
+			\includegraphics[width=0.7\linewidth]{images/SAC_B7_datacenterstructure}
+		\end{figure}
+		
 		
 		\begin{itemize}
 		\tightlist
 		\item
-		  Servers: si tratta dei blade systems,
-		  rappresentano le foglie dell'albero e sono interconnessi tra
-		  loro mediante dei collegamenti da 1-10Gbps.
+		  Servers: si tratta dei \textbf{blade systems}, rappresentano le foglie dell'albero e sono interconnessi tra loro mediante dei collegamenti da 1-10Gbps.
 		\item
-		  Edge Layer: anche chiamato Access Layer, è
-		  composto da switch top-of-rack ed eventualmente da
-		  quelli di tipo end-of-row. In questo layer i
-		  blade systems vengono connessi e vengono implementate
-		  le funzioni di isolamento del traffico e di \emph{gestione dei
-		  guasti}.
+		  Edge Layer: anche chiamato Access Layer, è composto da \textbf{switch top-of-rack} ed eventualmente da quelli di tipo end-of-row. In questo layer i blade systems vengono connessi e vengono implementate le funzioni di isolamento del traffico e di \emph{gestione dei guasti}.
 		\item
-		  Aggregation Layer: su questo livello vengono
-		  interconnesse zone separate dei datacenter
-		  (interconnessione di pods). Il layer implementa
-		  funzionalità di QoS per i flussi dati (è possibile
-		  anche rallentarne alcuni in casi di sovraccarico). Traffic shaping in
-		  caso di overload.
+		  Aggregation Layer: su questo livello vengono interconnesse \textbf{zone separate} dei datacenter (interconnessione di pods). Il layer implementa funzionalità di QoS per i flussi dati (è possibile anche rallentarne alcuni in casi di sovraccarico). Traffic shaping in caso di overload.
 		\item
-		  Core Layer: in questo layer si lavora
-		  esclusivamente a livello di rete. Gestisce tutte le
-		  connessioni con l'esterno e
-		  l'instradamento in caso di failures (quando alcuni
-		  link non sono disponibili), inoltre interagisce con la
-		  SAN. Il livello di disponibilità delle risorse è estremamente
-		  importante, serve infatti un'ottima politica di gestione in caso di
+		  Core Layer: in questo layer si lavora esclusivamente a livello di rete. Gestisce tutte le \textbf{connessioni con l'esterno} e
+		  l'instradamento in caso di failures (quando alcuni link non sono disponibili), inoltre interagisce con la SAN. Il livello di disponibilità delle risorse è estremamente importante, serve infatti un'ottima politica di gestione in caso di
 		  disponibilità critica.
 		\end{itemize}
 		
@@ -2766,71 +2867,6 @@
 		livello più basso di energia per una quantità di tempo che giustifichi
 		la scelta}.
 		\end{quote}
-		\begin{comment}
-		    
-		
-		\section{GCIntro}
-		% Work in progress
-		\section{WebApp}
-		Applicazione creata con Python e Flask.
-		Il valore aggiunto dell'approccio con Google Cloud è che non dobbiamo preoccuparci di configurare la rete o l'architettura hardware, macchine virtuali ecc. Le API sono orientate allo sviluppo e possono includere varie funzionalità, anche inerenti al machine learning o map reduce. 
-		Da un punto di vista dello sviluppatore è importante concentrarsi sulla gestione delle risorse e sulle performance. E' importante anche configurare bene i parametri di servizio come la gestione delle latenze o minimizzare i costi.
-		\subsection{Struttura di un'applicazione}
-		\begin{figure}[ht]
-		    \centering
-		    \includegraphics[width=0.8\textwidth]{SAC_C2_01.png}
-		\end{figure}
-		L'applicazione viene divisa in componenti logici (microservizi), che comunicano tra loro, i componenti condividono le features del motore dell'App. Un servizio consiste in un codice sorgente e un file di configurazione (Es: YAML).
-		Ogni servizio può avere pià versioni che possono essere seguite su varie istanze a seconda delle esigenze dello sviluppatore o dell'applicazione.
-		Ambiente Virtuale
-		Separare le dipendenze del progetto dal cuore delle librerie:
-		\begin{itemize}
-		    \item Progetti auto contenuti
-		    \item Deployment semplificato e riproducibile 
-		    \item Utile per il testing
-		\end{itemize}
-		\section{Storage in Cloud Applications}
-		\subsection{Panoramica della memoria}
-		Abbiamo diverse opzioni di archiviazione, Google Cloud Platform ha diversi opzioni di database in base al tipo (Relazione o Non relazionale):
-		\begin{itemize}
-		    \item Cloud SQL: Un'immagine managed, una macchina virtuale con i software già installati per gestire il db
-		    \item Cloud Spanner; Utilizzato per gaming, vendite e registro finanziario globale. Possidede uno scaling illimitato con una consistency globale fino al 99,99 \% di availabilty
-		    \item AlloyDb for PostgreSQL: Pienamento gestibile, compatibile con PostegreSQL per performances superiori. Utilizzato per grosse migrazioni e applicazioni legacy.
-		    \item Bare Meta Solution for Oracle
-		    \item BigQuery: Senza un vero server, è altamente scalabile. Processing in real-time e analytics da multicloud.
-		    \item Cloud BigTable: Molto performante, pienamente gestito secondo una struttura dati chiave-valore, per operazioni su vasta scala e un ampio carico di lavoro. Personalizzabile, riesce a performare 5 miliardi di richiesta al secondo al suo picco. 
-		    \item Firestore
-		    \item Firebase Realtime database: Immagazzina e sincronizza i dati in real time. Chat e app per dispositivi mobile.
-		    \item MemoryStore
-		    \item MongoDB Atlas
-		    \item Google Cloud Partner Service: Gestione offerta da open source network, partner di google. 
-		\end{itemize}
-		\subsection{Google Fire Store}
-		
-		
-		\section{Publisher / Subscriber Systems}
-		\subsection{Cloud Pub/Sub}
-		Concetti di base: Un topic è quell'elemento di coda che ospita i messaggi, attraverso una Subscription è possibile accedere ai messaggi e ai dati che essi contengono. Ogni messaggio può avere degli attributi in formato chiave valore.
-		
-		Un publisher crea dei messaggi e li emette verso un topic, un subscriber crea una subscription per la coda e riceve i messaggi. I pattern di comunicazione possono essere di ogni tipo: uno a molti, molti a uno e molti a molti. 
-		I messaggi sono immagazzinati in code, possono ricevere degli Acknowledgement che sono sostanzialmente una forma di conferma di lettura, l'Acknowledgement comunica che il messaggio è stato letto e quindi il messaggio viene rimosso dalla coda. 
-		
-		Ogni applicazione ha degli endpoints ed effettua delle richieste HTTPS.
-		Dal punto di vista della subscription abbiamo due modalità:
-		\begin{itemize}
-		    \item pull: read bloccante, il subscriber attende che vi sia una risposta per la pubblicazione di nuovi messaggi.
-		    \item Push: In questo caso viene esposto un url, che sarà invocato quando ci sono nuovi messaggi.
-		\end{itemize}
-		Casi d'uso:
-		\begin{itemize}
-		    \item Bilancio del carico in una rete di cluster
-		    \item Implementazione di workflow asincroni
-		    \item Distribuire eventi di notifica
-		    \item
-		\end{itemize}
-		Prezzi del modello:
-		I primi 10 giga sono gratuiti, successivamente vi è un costo di 40\& al Terabyte.
-		\end{comment}
 		
 		\newpage	
 		\section{Modelli di decisione}
