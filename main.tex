@@ -45,7 +45,7 @@
 		
 		\begin{figure}[ht]
 			\centering
-			\includegraphics[width=0.8\textwidth]{SAC_01.png}
+			\includegraphics[width=0.6\textwidth]{SAC_01.png}
 		\end{figure}
 		
 		Uno dei problemi principali, che si evolvono con l'evolversi del web e dell'esponenziale crescita dei dati, è la scalabilità.
@@ -278,6 +278,11 @@
 		La replicazione può avvenire sia in modo verticale che orizzontale, ma anche in maniera ibrida. 
 		
 		\subsection{Architetture}
+		\begin{figure}[ht]
+			\centering
+			\includegraphics[width=0.8\textwidth]{SAC_A2_architecture_server.png}
+		\end{figure}
+		
 		Per quanto riguarda invece l'architettura di un servizio gli approcci possibili sono i seguenti:
 		\begin{itemize}
 		    \item Monolitico: Un singolo software, difficile da replicare e mantenere, quindi costoso. 
@@ -286,10 +291,6 @@
 		    \item Serverless: Architettura senza server, una sorta di microservizi 2.0
 		\end{itemize}
 		
-		\begin{figure}[ht]
-		\centering
-		\includegraphics[width=0.8\textwidth]{SAC_A2_architecture_server.png}
-		\end{figure}
 		Le architetture ibride prevalgono nella maggior parte delle aziende per la difficoltà di queste a convertirsi ai nuovi paradigmi.
 		
 		\subsubsection{Modelli pre-SOA}
@@ -350,7 +351,7 @@
 		
 		\begin{figure}[ht]
 		    \centering
-		    \includegraphics[width=0.5\linewidth]{SAC_A2_soapMessage.png}
+		    \includegraphics[width=0.3\linewidth]{SAC_A2_soapMessage.png}
 		    \caption{Soap è incapsulato in HTTP e definisce una struttura per le risposte HTTP in XML}
 		\end{figure}
 		
@@ -2163,14 +2164,15 @@
 		
 		\subsubsection{Data Center Network}\label{data-center-network}
 		\paragraph{Struttura}\label{struttura}
-		La rete di un datacenter presenta una topologia ad albero nella
-		quale è possibile individuare diversi livelli (dal basso all'alto):
 		
 		\begin{figure}[ht]
 			\centering
-			\includegraphics[width=0.7\linewidth]{images/SAC_B7_datacenterstructure}
+			\includegraphics[width=0.7\linewidth]{images/SAC_B7_treetopology}
+			\label{fig:sacb7topology}
 		\end{figure}
 		
+		La rete di un datacenter presenta una topologia ad albero nella
+		quale è possibile individuare diversi livelli (dal basso all'alto):
 		
 		\begin{itemize}
 		\tightlist
@@ -2187,31 +2189,18 @@
 		\end{itemize}
 		
 		\paragraph{Limiti della Topologia ad
-		Albero}\label{limiti-della-topologia-ad-albero}\mbox{}\\
+		Albero}\label{limiti-della-topologia-ad-albero}
 		Il principale problema di questa topologia sta nei \textbf{layer
-		superiori} (aggregation e core), che possono diventare dei
-		colli di bottiglia o essere soggetti a
-		failures. La soluzione consiste nell'utilizzo
-		della replicazione e nella \textbf{\emph{riprogettazione della
-		topologia}}. Con una nuova topologia di tipo Fat Tree
-		vengono messi a disposizione \textbf{\emph{più link nella parte
-		superiore della rete}}, ottenendo una banda maggiore, e
-		quindi maggiore scalabilità e \textbf{\emph{tolleranza
-		ai guasti}}. La configurazione di rete utilizzata per ottenere
-		questi risultati si chiama CLOS Network.\\
-		\begin{figure}[ht]
-			\centering
-			\includegraphics[width=0.7\linewidth]{SAC_B7_clos}
-			\label{fig:sacb7clos}
-		\end{figure}
+		superiori} (aggregation e core), che possono diventare dei colli di bottiglia o essere soggetti a failures. La soluzione consiste nell'utilizzo della replicazione e nella \textbf{riprogettazione della topologia}. Con una nuova topologia di tipo Fat Tree vengono messi a disposizione più link nella \textbf{parte superiore della rete}, ottenendo una banda maggiore, e quindi maggiore scalabilità e \textbf{tolleranza ai guasti}. La configurazione di rete utilizzata per ottenere	questi risultati si chiama CLOS Network.\\
 		
 		\paragraph{CLOS Network}
-		Si considera il datacenter come
-		un grafo, dove i nodi sono i server/switch e gli
-		archi tra i nodi le connessioni. L'obiettivo di una rete di
-		questo tipo è quello di minimizzare il numero di percorsi
-		bloccati (in uso), minimizzando il numero di
-		connessioni. Prima dell'introduzione della rete Clos, il numero di punti di incrocio doveva essere uguale al numero di ingressi moltiplicato per il numero di uscite. Questo approccio, noto come n-squared o n2, poteva portare rapidamente a un numero enorme di punti percorsi, con conseguenti costi significativi. nelle reti Clos gli switch sono stati organizzati in un'architettura a tre stadi che comprendeva uno stadio intermedio inserito tra gli stadi di ingresso (input) e di uscita (output). In questo modo, ogni switch di ingresso si collega a ogni switch intermedio che, a sua volta, si collega a ogni switch di uscita. Il risultato è una topologia non bloccante che richiede meno punti di incrocio rispetto alle reti di switch più convenzionali dell'epoca. Grazie alle reti Clos è possibile ri organizzare la rete per trovare un percorso che prima sembrava inaccessibile o bloccato. 
+		Si considera il datacenter come	un grafo, dove i nodi sono i server/switch e gli	archi tra i nodi le connessioni. L'obiettivo di una rete di questo tipo è quello di minimizzare il numero di percorsi bloccati (in uso), minimizzando il numero di connessioni. Prima dell'introduzione della rete Clos, il numero di punti di incrocio doveva essere uguale al numero di ingressi moltiplicato per il numero di uscite. Questo approccio, noto come \textit{n-squared} o \textit{$n^2$}, poteva portare rapidamente a un numero enorme di punti percorsi, con conseguenti costi significativi.\\
+		\begin{figure}[ht]
+			\centering
+			\includegraphics[width=0.5\linewidth]{images/SAC_B7_clos}
+		\end{figure}
+		Nelle reti Clos gli switch sono stati organizzati in un'architettura a tre stadi che comprende uno stadio intermedio inserito tra gli stadi di ingresso (input) e di uscita (output). In questo modo, ciascun output degli switch di input si collega ad uno switch intermedio, i cui output a loro volta, si collegano ad uno switch di uscita. Il risultato è una topologia \textbf{non bloccante} che richiede meno punti di incrocio rispetto alle reti di switch più convenzionali dell'epoca. Grazie alle reti Clos è possibile \textbf{ri-organizzare} la rete per trovare un percorso che prima sembrava inaccessibile o bloccato.\\
+		Le reti Clos sono un caso particolare delle più generali reti Benes.
 		
 		\begin{quote}
 		Google Data Center - Scenario La crescita del traffico per i
@@ -2225,129 +2214,96 @@
 		
 		\subsubsection{Scalabilità}\label{scalabilituxe0}
 		
-		La scalabilità rappresenta il problema principale
-		di un datacenter. Quando si parla di scalabilità questa può essere
-		verticale, si scala facendo un upgrade degli
-		apparati hardware/software oppure orizzontale,
-		basato sulla replicazione. Tra i due la \emph{scelta
-		migliore}, nonché la più economica è quella della
-		replicazione orizzontale, che consiste anche nel
-		fare affidamento sulla generazione precedente, con un
-		10\% in meno di performance su \emph{dispositivi che costano la
-		metà}. Scelto il tipo di scalabilità rimane da decidere \emph{come
-		replicare}. Anche per la replicazione sono disponibili
-		due metodi:
+		La scalabilità rappresenta il problema principale di un datacenter. Quando si parla di scalabilità questa può essere verticale, si scala facendo un upgrade degli apparati hardware/software oppure orizzontale, basata sulla replicazione. Tra i due la \emph{scelta	migliore}, nonché la più economica è quella della replicazione orizzontale, che permette anche di fare affidamento sulla generazione precedente, con un 10\% in meno di performance su dispositivi che costano la metà. Scelto il tipo di scalabilità rimane da decidere \emph{come	replicare}. Anche per la replicazione sono disponibili	due metodi:
 		
 		\begin{itemize}
 		\tightlist
 		\item
 		  Replicazione \textbf{verticale}: dove un servizio complesso
 		  viene suddiviso in sottoservizi ciascuno messo su un
-		  dispositivo diverso
+		  dispositivo diverso.
 		\item
 		  Replicazione \textbf{orizzontale}: che consiste nella
 		  replicazione di oggetti identici
 		\end{itemize}
 		
-		\paragraph{Architettura di un Web
-		Cluster}\label{architettura-di-un-web-cluster}\mbox{}\\
-		In generale, l'architettura tipica di un Web Cluster fa
-		uso di entrambi i metodi di replicazione e si divide su due livelli:
+		\begin{figure}[ht]
+			\centering
+			\includegraphics[width=0.5\linewidth]{images/SAC_B7_replication}
+		\end{figure}
+		
+		\paragraph{Architettura di un Web Cluster}\label{architettura-di-un-web-cluster}
+		In generale, l'architettura tipica di un Web Cluster fa uso di entrambi i metodi di replicazione e si divide su due livelli:
 		\begin{itemize}
 		\item
 		  Front-end: costituito dal web switch \emph{visibile
-		  all'esterno come un unico indirizzo IP pubblico}, detto \textbf{Virtual IP}. Il ruolo
-		  dell web switch nell'architettura è quello di direttore
-		  d'orchestra. Può essere implementato a tutti i livelli (hardware,
-		  kernel-level, applicativo). Deve avere delle
-		  funzionalità per il bilanciamento del traffico, e per
-		  questo si hanno due opzioni:
+		  all'esterno come un unico indirizzo IP pubblico}, detto \textbf{Virtual IP}. Il ruolo del web switch nell'architettura è quello di direttore d'orchestra. Può essere implementato a tutti i livelli (hardware, kernel-level, applicativo). Deve avere delle funzionalità per il bilanciamento del traffico, e per questo si hanno due opzioni:
 		
 		  \begin{itemize}
 		  \tightlist
 		  \item
-		    Switch di Livello 4 (Trasporto): vengono utilizzate
-		    delle binding tables (strutture dati) per
-		    tenere traccia delle connessioni TCP. Il
-		    3-way-handshake viene mediato dallo switch e poi
-		    portato avanti dal backend server a cui è diretto il pacchetto.
+		    Switch di Livello 4 (Trasporto): vengono utilizzate delle \textbf{binding tables} (strutture dati) per tenere traccia delle connessioni TCP. Il 3-way-handshake viene mediato dallo switch e poi portato avanti dal backend server a cui è diretto il pacchetto.
 		  \item
-		    Switch di Livello 7 (Applicativo): si tratta di
-		    nodi più intelligenti che lavorano in termini
-		    richiesta, e possono tenere traccia delle sessioni
-		    utente. Il 3-way-handshake viene gestito
-		    interamente dallo switch, che deve conoscere la richiesta
-		    per sapere dove inoltrarla.
+		    Switch di Livello 7 (Applicativo): si tratta di nodi più intelligenti che lavorano in termini richiesta, e possono tenere traccia delle \textbf{sessioni utente}. Il 3-way-handshake viene gestito interamente dallo switch, che deve conoscere la richiesta per sapere dove inoltrarla.
 		  \end{itemize}
 		
-		  Non c'è una soluzione migliore dei due. Possono essere adottate
-		  entrambe in base al contenuto del traffico.
+		  Non c'è una soluzione che sia migliore dell'altra. Possono essere adottate entrambe in base al contenuto del traffico.
 		
 		  \begin{quote}
-		  Esempio: Instagram La \emph{maggior parte del
-		  contenuto del contenuto} è un contenuto statico
+		  Esempio: Instagram. La maggior parte del
+		  contenuto del contenuto è \textbf{statico}
 		  (immagini), pertanto si possono usare switch di livello 4. Per
-		  tutte quelle funzionalità che utilizzano delle API per
-		  consigliare post, chi seguire, è possibile utilizzare
+		  tutte quelle funzionalità che utilizzano delle API per, ad esempio, consigliare post, chi seguire, è possibile utilizzare
 		  switch di livello 7.
 		  \end{quote}
 		\item
-		  Backend: insieme di server \emph{configurati con IP
-		  privati} che utilizzano il front-end per le comunicazioni con
+		  Backend: insieme di server configurati con \textbf{IP privati} che utilizzano il front-end per le comunicazioni con
 		  l'esterno
 		\end{itemize}
 		
 		\hypertarget{limiti}{%
-		\paragraph{Limiti}\label{limiti}}\mbox{}\\
+		\paragraph{Limiti}\label{limiti}}
 		I limiti della scalabilità sono strettamente collegati alla
-		consistenza dei dati: le repliche devono essere
-		mantenute aggiornate. I colli di bottiglia
-		possono verificarsi sia negli switch che nella
-		rete dei datacenter. Inoltre, è opportuno considerare la
-		crescita dei datacenter anche in relazione al
+		consistenza dei dati: le repliche devono essere mantenute aggiornate. I colli di bottiglia possono verificarsi sia negli switch che nella rete dei datacenter. Inoltre, è opportuno considerare la crescita dei datacenter anche in relazione al
 		consumo energetico che richiedono.
 		
 		\hypertarget{traffico}{%
 		\subsubsection{Traffico}\label{traffico}}
 		
-		Quando si parla di traffico di un datacenter si deve far riferimento a
-		piccoli gruppi di cluster interconnessi. Si possono identificare dei pattern nella comunicazione tra i nodi di un cluster. Infatti, i nodi di un rack tipicamente comunicano con i nodi dello stesso rack, motivo per il quale vanno messi vicini:
-		non necessariamente sulla stessa macchina fisica, poiché
-		potrebbero entrare in competizione per le risorse causando un
-		overload e di conseguenza un calo di prestazioni, ma
-		neanche lontani per \emph{evitare di spostare grandi
-		quantità di traffico}. Vi è anche un altro pattern riconoscibile: alcuni nodi sono particolarmente propensi a ricevere da tutti gli altri nodi (e collateralmente ad inviare). Questi nodi devono essere messi in una posizione \textbf{baricentrica} all'interno del datacenter. Inoltre, è opportuno spostare tutte quelle
-		operazioni che occupano traffico come i backup durante le
-		ore notturne, quando il server è meno probabile che debba
-		soddisfare le richieste degli utenti.
+		Quando si parla di traffico di un datacenter si deve far riferimento a piccoli gruppi di cluster interconnessi. Si possono identificare dei \textbf{pattern} nella comunicazione tra i nodi di un cluster. Infatti, i nodi di un rack tipicamente comunicano con i nodi dello stesso rack, motivo per il quale vanno messi vicini anche se non necessariamente sulla stessa macchina fisica, poiché potrebbero entrare in competizione per le risorse causando un \textbf{overload} e di conseguenza un calo di prestazioni. D'altro canto non possono neanche essere lontani per evitare di spostare grandi
+		\textbf{quantità di traffico}.\\
+		Vi è anche un altro pattern riconoscibile: alcuni nodi sono particolarmente propensi a ricevere da tutti gli altri nodi (e collateralmente ad inviare). Questi nodi devono essere messi in una posizione \textbf{baricentrica} all'interno del datacenter.
+		
+		\begin{figure}[th]
+			\centering
+			\includegraphics[width=0.5\linewidth]{images/SAC_B7_traffic}
+		\end{figure}
+		
+		Inoltre, è opportuno spostare tutte quelle
+		operazioni onerose che occupano traffico non utile, come i backup, durante le ore notturne, quando è meno probabile che il server debba soddisfare le richieste degli utenti.
 		
 		\subsubsection{Gestione del Data Center}\label{gestione-del-data-center}
 		
-		Il posizionamento e la migrazione delle macchine
-		virtuali può essere utilizzata come soluzione a diversi problemi:
+		Il posizionamento e la migrazione delle macchine virtuali possono essere risolutivi per diversi problemi:
 		
 		\begin{itemize}
-		\tightlist
 		\item
 		  Bilanciamento del carico
 		\item
-		  Consumo energetico: Consolidare server idle può aiutare a risparmiare energia
+		  Consumo energetico: \textbf{consolidare} server idle può aiutare a risparmiare energia
 		\item
-		  Utilizzo della rete: Le VM possono cambiare i loro pattern di carico di lavoro, analizzando i dataset differenti e le differenti interazioni tra i pattern. Non è necessario re-deploiare la VM se si preserva la località della rete.
+		  Utilizzo della rete: le VM possono cambiare i loro pattern di carico di lavoro, analizzando i dataset differenti e le differenti interazioni tra i pattern. Non è necessario re-deployare la VM se si preserva la località della rete.
 		\item
-		  Gestione del calore: Bisogna evitare i cosiddetti \textbf{hotspot}, ovvero le concentrazioni di server ad alta utilizzazione e cioè ad alta produzione di calore. Le macchine negli hotspot lavoreranno a maggiore temperatura e quindi avranno una maggiore usura. Inoltre se alcune macchine non vengono utilizzate è possibile spegnere l'impianto di condizionamento per tale area di modo da risparmiare notevole energia.
+		  Gestione del calore: bisogna evitare i cosiddetti \textbf{hotspot}, ovvero le concentrazioni di server ad alta utilizzazione e cioè ad alta produzione di calore. Le macchine negli hotspot lavoreranno a maggiore temperatura e quindi saranno sottoposte a maggiore usura. Inoltre se alcune macchine non vengono utilizzate è possibile spegnere l'impianto di condizionamento per tale area di modo da risparmiare notevole energia.
 		\end{itemize}
 		
-		\hypertarget{reti-esterne}{%
-		\paragraph{Reti Esterne}\label{reti-esterne}}\mbox{}\\
-		Vi sono altri problematiche che vanno oltre quelle del datacenter e 
-		riguardano l’instradamento di traffico fra più datacenter per
-		applicazioni distribuite.
+		\paragraph{Reti Esterne}
+		Vi sono altri problematiche che vanno oltre quelle del datacenter e riguardano l’instradamento di traffico fra più datacenter per applicazioni distribuite.
 		I possibili punti di congestione sono:
 		\begin{itemize}
-			\item \textit{last mile}: Dall'uscita della rete al client finale
-			\item \textit{first mile}: Dal datacenter all'ingresso della rete
-			\item \textit{peering point}: Punti di scambio fra AS
+			\item \textit{last mile}: dall'uscita della rete al client finale
+			\item \textit{first mile}: dal datacenter all'ingresso della rete
+			\item \textit{peering point}: punti di scambio fra AS
 		\end{itemize}
 		La congestione non è sempre un problema \emph{vicino al
 		datacenter}. Spesso può essere causata dall'ultimo miglio (lato
@@ -2369,123 +2325,83 @@
 		L'infrastruttura di Google Cloud si sviluppa su tre layer concentrici:
 		\begin{itemize}
 			\item Al centro ha i suoi \textbf{datacenter} distribuiti nelle località dove Google stessa offre i suoi servizi
-			\item Nell'anello successivo sono presenti i \textbf{Point of Presence} che si occupano di instradare i pacchetti prevalentemente all'interno della propria rete (\textit{cold potato policy}). Così facendo è possibile ottimizzare il traffico e ricorrere agli ISP solo per l'ultimo miglio.
-			\item Nell'ultimo anello invece sono localizzati le migliaia di \textbf{edge nodes} che formano la CDN di Google. Questi sono i più numerosi e i più replicati e si occupano di fornire i contenuti statici. Questi nodi sono generalmente posizionati all'interno della AS di cui fa parte l'utente finale per minimizzare gli hop necessari.
+			\item Nell'anello successivo sono presenti i \textbf{Point of Presence} che si occupano di instradare i pacchetti preferibilmente all'interno della propria rete (\textit{cold potato policy}). Così facendo è possibile ottimizzare il traffico e ricorrere agli ISP solo per l'ultimo miglio.
+			\item Nell'ultimo anello invece sono localizzati i migliaia di \textbf{edge nodes} che formano la CDN di Google. Questi sono i più numerosi e i più replicati e si occupano di fornire i contenuti statici. Questi nodi sono generalmente posizionati all'interno della AS di cui fa parte l'utente finale per minimizzare gli hop necessari.
 		\end{itemize} 
 		\end{quote}
 		
 		\subsection{Software Defined Data Center}
 		
-		In un data center tradizionale c'è una netta distinzione
-		tra il livello di computazione (\emph{gestione delle
-		VM}) e quello di comunicazione (rete). In un
-		Software Defined Data Center (SDDC) questi due
-		livelli si uniscono formando un unico livello. Non c'è
-		più una visione di una singola VM ma di reti virtuali,
-		composte da Macchine Virtuali (VM) e
-		Virtual Router (VR). Le funzionalità di
-		rete e i suoi apparati vengono implementati via software
-		e via hardware (general purpose).
+		In un data center tradizionale c'è una netta distinzione tra il livello di computazione (\emph{gestione delle VM}) e quello di comunicazione (rete). In un Software Defined Data Center (SDDC) questi due livelli si uniscono formando un unico livello. Non c'è	più una visione di una singola VM ma di reti virtuali, composte da Macchine Virtuali (VM) e Virtual Router (VR). Le funzionalità di rete e i suoi apparati vengono implementati via software e via hardware (general purpose).
 		
 		\subsubsection{Inibitori SDDC}\label{inibitori-sddc}
 		
-		Ci sono diversi aspetti elementi da rimuovere per
-		sfruttare appieno i vantaggi offerti da un SDDC:
+		Ci sono diversi aspetti elementi da considerare per sfruttare appieno i vantaggi offerti da un SDDC:
 		
 		\begin{itemize}
 		\item
-		  Gestione della Rete Statica: occorre rimuovere
-		  le VLAN. Ogni piccolo cambiamento nelle VLAN
-		  comporta una riconfigurazione, un dettaglio non
-		  trascurabile in uno scenario dinamico dovuto alle continue
-		  migrazioni delle macchine. Poiché le VLAN sono
-		  complesse e possono introdurre errori, bisogna
-		  mapparle in modo intelligente sul layout fisico del
-		  datacenter (le macchine parlando con un \emph{sottoinsieme di
-		  nodi}).
+		  Gestione della rete statica: occorre rimuovere le VLAN. Ogni piccolo cambiamento nelle VLAN comporta una riconfigurazione, un dettaglio non trascurabile in uno scenario dinamico dovuto alle continue migrazioni delle macchine. Poiché le VLAN sono
+		  complesse e possono introdurre errori, bisogna mapparle in modo intelligente sul layout fisico del datacenter (le macchine parlando con un \emph{sottoinsieme di nodi}).
 		
-		  VLAN: Rete Locale divisa in \emph{più reti locali
-		  logicamente non comunicanti tra loro} ma che \emph{condividono la
-		  stessa infrastruttura fisica}.
+		  VLAN: Rete locale divisa in \emph{più reti locali logicamente non comunicanti tra loro} ma che \emph{condividono la stessa infrastruttura fisica}.
 		\item
-		  Frammentazione delle Risorse: A causa dell'unificazione del livello computazionale con quello di comunicazione bisogna garantire un corretto load balancing tra tutte le macchine in gioco. Allo stesso tempo però è opportuno che alcune macchine siano localmente vicine andando contro al principio di distribuzione del carico che le vorrebbe distribuite su più nodi.
+		  Frammentazione delle risorse: a causa dell'unificazione del livello computazionale con quello di comunicazione bisogna garantire un corretto load balancing tra tutte le macchine in gioco. Allo stesso tempo però è opportuno che alcune macchine siano localmente vicine andando contro al principio di distribuzione del carico che le vorrebbe distribuite su più nodi.
 		\item
-		  Peer 2 Peer Poor Connectivity: Bisogna evitare il problema dell'\textbf{oversubscription}, ovverosia quel fenomeno per cui la banda disponibile negli elementi di switching è minore della somma dei collegamenti entranti. Inoltre se la connettività host to network è particolarmente efficace e poco costosa, quella IP-based dei SDD è più costosa e tipicamente più lenta. Occorre avere quindi una connettività nell'ordine dei gigabit anche localmente.
+		  Peer 2 Peer poor connectivity: bisogna evitare il problema dell'\textbf{oversubscription}: ogni volta che si dispone di uno switch di accesso in cui la larghezza di banda totale possibile combinata di tutte le connessioni client supera la larghezza di banda upstream dallo switch di accesso al core, si è in presenza di un oversubscription.
+		  Inoltre, se la connettività host to network è particolarmente efficace e poco costosa, quella IP-based dei SDD è più costosa e tipicamente più lenta. Occorre avere quindi una connettività nell'ordine dei gigabit anche localmente.
 		\end{itemize}
 		
 		\subsubsection{Soluzioni}\label{soluzioni}
+		Vengono proposti diversi approcci per venire in contro ai requisiti di un SDDC.
 		
-		Vengono proposti diversi approcci per venire in contro ai
-		requisiti di un SDDC.
+		\paragraph{Iperconvergenza}\label{iperconvergenza}
 		
-		\paragraph{Iperconvergenza}\label{iperconvergenza}\mbox{}\\
+		È un tentativo di condensare in un livello di intelligenza
+		unico tutte le funzioni di gestione del datacenter. L'Iperconvergenza è ampiamente utilizzata in contesti cloud e
+		consiste in un sistema hardware verticalizzato, al cui interno integra gli elementi di computazione, storage e
+		networking.
+		
 		\begin{figure}[ht]
 			\centering
-			\includegraphics[width=0.5\linewidth]{SAC_B7_hyperconvergence}
+			\includegraphics[width=0.3\linewidth]{SAC_B7_hyperconvergence}
 			\label{fig:sacb7hyperconvergence}
 		\end{figure}
 		
-		È un tentativo di condensare in un livello di intelligenza
-		unico tutte le funzioni di gestioni del datacenter.
-		L'Iperconvergenza è ampiamente utilizzata in contesti cloud e
-		consiste in un sistema hardware verticalizzato con già al suo interno tutti
-		gli elementi di computazione, storage e
-		networking. Sono a tutti gli effetti dei \textbf{piccoli
-		datacenter} già testati in modo da non risultare
-		colli di bottiglia. Sistemi di questo tipo si
-		auto configurano, comportando una riduzione dei costi
-		CAPEX e OPEX e un deployment efficiente.
+		Sono a tutti gli effetti dei \textbf{piccoli datacenter} già testati in modo da non risultare colli di bottiglia. Sistemi di questo tipo si auto configurano, comportando una riduzione dei costi CAPEX e OPEX e un deployment efficiente.\\
+		Sono possibili diversi tipi di architettura di iperconvergenza:
+		\begin{itemize}
+			\item Sistemi stack integrati: Server+Storage+Network+Application software già presente al proprio interno
+			\item Integrated infrastructure systems: Server+Storage+Network+Virtualization se si vuole un infrastruttura di computazione generica. Rappresentano i blocchi sui cui viene costruito il cloud
+			\item In combinazione con il \textit{fabric computing}
+		\end{itemize}
 		
-		\paragraph{Riduzione della Topologia di Rete - Fabric Computing}\label{riduzione-della-topologia-di-rete}\mbox{}\\
+		
+		\paragraph{Riduzione della Topologia di Rete - Fabric Computing}\label{riduzione-della-topologia-di-rete}
 		Consiste nella virtualizzazione delle risorse di rete in modo
 		da avere una visione semplificata. Gli elementi di
 		switching multipli vengono condensati su un unico
-		elemento di switching. L'idea è quella di avere una rete \textit{mesh}
-		che interconnette tra loro dispositivi di rete e
-		di storage virtualizzando entrambi. Tipicamente viene realizzato mediante le Software Defined Networks. Riducendo tutto ad una mesh la comunicazione tra macchine è particolarmente veloce in quanto vicine. Inoltre, è possibile scalare la rete e riconfigurarla efficacemente in base alle necessità.
+		elemento di switching. L'idea è quella di avere una rete \textit{mesh} che interconnette tra loro dispositivi di rete e
+		di storage virtualizzando entrambi. Tipicamente viene realizzato mediante le Software Defined Networks. Riducendo tutto ad una mesh la comunicazione tra macchine è particolarmente veloce in quanto vicine e non occorre più preoccuparsi della topologia della rete. Inoltre, è possibile scalare la rete e riconfigurarla efficacemente in base alle necessità.
 
-		\paragraph{Topi ed Elefanti}\label{topi-e-elefanti}\mbox{}\\
-		Sfrutta le caratteristiche del traffico di rete, che nei data center non è uniforme. 
+		\paragraph{Topi ed Elefanti}\label{topi-e-elefanti}
+		Sfrutta le caratteristiche del traffico di rete \textbf{non uniforme} nei data center.
 		La terminologia "topi" (breve) ed "elefanti" (lungo) per la durata del flusso fornisce una metafora per il traffico web. Ci sono relativamente pochi elefanti e un gran numero di topi.
-		Può accadere quindi che vi siano link sovraccaricati e altri sottoutilizzati.
-		Si utilizzano piccoli set di link veloci riconfigurabili dinamicamente in base alla richiesta. In questo modo flussi più grandi verranno su determinati link mentre flussi più piccoli su altri.
-		Tipicamente vengono utilizzati collegamenti ottici con switch ottico-meccanici.
+		Può accadere quindi che vi siano link sovraccaricati e altri sottoutilizzati. Si utilizzano piccoli set di link veloci riconfigurabili dinamicamente in base alla richiesta. In questo modo flussi più grandi verranno dirottati su determinati link mentre flussi più piccoli su altri. Tipicamente vengono utilizzati collegamenti \textbf{ottici} con switch ottico-meccanici.
 		
 		\subsection{Progettazione di un Data Center}\label{progettazione-di-un-data-center}
 		\subsubsection{Posizione}\label{posizione}
 		
 		Il posizionamento di un data center è un fattore importante da
 		tenere in considerazione. In generale è bene scegliere
-		zone economiche, sicure da disastri
-		naturali (in America le zone vicino a Las Vegas sono
-		sicure, ma non economiche), lontane da impianti
-		chimici o nucleari e che non siano obiettivi militari.
-		Quando si sceglie dove costruire un data center è inoltre
-		importante guardare i costi delle risorse come
-		l'energia, le tasse e il
-		costo delle risorse umane. Anche questo mercato
-		viene mosso dalle tendenze che fanno
-		lievitare i prezzi. Anche fattori come il
-		clima e la logistica (autostrade,
-		trasporto) sono da considerare. Anche la vicinanza
-		all'utente è un aspetto da tenere in conto, in quando contribuisce a un
+		zone economiche, non soggette a disastri naturali (in America le zone vicino a Las Vegas sono	sicure, ma non economiche), lontane da impianti	chimici o nucleari e che non siano obiettivi militari.\\
+		Quando si sceglie dove costruire un data center è importante guardare i costi delle risorse come	l'energia, le tasse e il
+		costo delle risorse umane. Anche questo mercato	viene mosso dalle tendenze che fanno lievitare i prezzi. Anche fattori come il clima e la logistica (autostrade, trasporto) sono da considerare. Inoltre, la vicinanza all'utilizzatore è un aspetto da tenere in conto, in quando contribuisce a un
 		miglioramento del tempo di risposta dei servizi.
 		
 		\subsubsection{Sicurezza dei Data Center}\label{sicurezza-dei-data-center}
-		Questi sistemi senza un personale adeguato valgono zero. Il
-		fattore umano è la maggiore causa di incidenti. Occorre
-		fare un analisi del comportamento dei dipendenti,
-		prima dell'assunzione e durante il periodo lavorativo.
-		Inoltre il personale richiede una certa formazione, ed è
-		necessaria una separazione in ruoli. L'accesso
-		fisico alle strutture deve essere vietato: i data
-		center richiedono entrate controllate con
-		sistemi di videosorveglianza e guardie di
-		sicurezza. Qualora dovesse essere concesso
-		l'accesso questo deve avvenire mediante dei badge
-		o dei sistemi di autenticazione con dati biometrici.
-		Ciascun dipendente deve disporre dei privilegi di accesso
-		minimi per poter svolgere il proprio lavoro.
+		Il fattore umano è la maggiore causa di incidenti. Occorre fare un analisi del comportamento dei dipendenti, prima dell'assunzione e durante il periodo lavorativo. Inoltre il personale richiede una certa formazione, ed è necessaria una separazione in ruoli. L'accesso	fisico alle strutture deve essere vietato: i data center richiedono entrate controllate con
+		sistemi di videosorveglianza e guardie di sicurezza. Qualora dovesse essere concesso l'accesso questo deve avvenire mediante dei badge o dei sistemi di autenticazione con dati biometrici.
+		Ciascun dipendente deve disporre dei privilegi di accesso minimi per poter svolgere il proprio lavoro.
 		
 		\subsubsection{Raffreddamento}\label{raffreddamento}
 		\begin{figure}[ht]
@@ -2494,64 +2410,32 @@
 			\label{fig:sacb7cooling}
 		\end{figure}
 		
-		Il raffreddamento rappresenta il costo maggiore
-		per la manutenibilità di un data center. La tecnologia più utilizzata
-		per quest'aspetto consiste nell'utilizzo delle \textbf{Computer
-		Room Air Conditioner} (CRAC), ovvero di stanze con
-		condizionatori enormi. Questi includono un sistema di
-		raffreddamento e di filtraggio della polvere (che
-		rende meno efficiente la dissipazione del calore). Il
-		flusso dell'aria viene gestito in modo da avere
-		dell'aria fredda che gira sotto al pavimento e che esce
-		attraverso delle piastrelle perforate. I server vengono
-		messi tutti rivolti nella stessa direzione e si cerca di creare un
-		sistema di corridoi alternati di aria fredda e di aria
-		calda. Per evitare la dissipazione del calore dai corridoi caldi
-		possono anche essere utilizzati un tettuccio o delle
-		tende sopra ai racks. Il riscaldamento è
-		un aspetto molto importante perché ha un \textbf{\emph{impatto
-		importante sulla vita dei componenti}}. Data la loro importanza anche i
-		sistemi di raffreddamento devono essere ridondanti. Deve
-		esserci un protocollo di emergenza nei casi in cui uno o
-		più condizionatori si spengono.
+		Il raffreddamento rappresenta il costo maggiore	per la mantenimento di un data center. La tecnologia più utilizzata per quest'aspetto consiste nell'utilizzo delle \textbf{Computer
+		Room Air Conditioner} (CRAC), ovvero di stanze con condizionatori enormi. Questi includono un sistema di raffreddamento e di filtraggio della polvere (che rende meno efficiente la dissipazione del calore). Il flusso dell'aria viene gestito in modo da avere dell'aria fredda che circola al di sotto del pavimento e che fuoriesce attraverso delle piastrelle perforate.\\
+		I server vengono messi tutti rivolti nella stessa direzione e si cerca di creare un sistema di corridoi alternati di aria fredda e di aria calda. Per evitare la dissipazione del calore dai corridoi caldi possono anche essere utilizzati delle tettoie o tende poste sopra ai racks. Il riscaldamento è un aspetto molto importante perché ha un \textbf{\emph{impatto importante sulla vita dei componenti}}. Data la loro importanza anche i	sistemi di raffreddamento devono essere ridondanti. Inoltre, deve esserci un protocollo di emergenza nei casi in cui uno o più condizionatori si spengono.
 		
 		\begin{quote}
-		Google e Facebook: I due colossi,
-		essendo il raffreddamento il costo energetico più grande all'interno di
-		un data center, hanno cominciato a costruire data center in
-		zone con un clima freddo, in modo da poter
-		utilizzare l'aria esterna.
+		Google e Facebook: Per i due colossi, il raffreddamento rappresenta il costo energetico più impattante nei loro data center. Hanno cominciato a costruire data center in	zone con un clima freddo, in modo da poter utilizzare l'aria esterna e risparmiare sui costi di raffreddamento.
 		\end{quote}
 		
 		\subsubsection{Energia}
-		L'enorme richiesta di energia dei data center non è dovuta solo alla potenza computazionale ma anche al raffreddamento e nel mondo rappresenta una parte consistente del consumo globale. Sono necessari generatori di corrente nell'ordine delle decine di MW con gruppi di continuità a gasolio per i cali di corrente, sistemi di raffreddamento ridondanti etc.
+		L'enorme richiesta di energia dei data center non è dovuta solo alla potenza computazionale ma anche al raffreddamento. L'energia richiesta dai DC è una fetta consistente del consumo globale. Sono necessari generatori di corrente nell'ordine delle decine di MW con gruppi di continuità a gasolio per i cali di corrente, sistemi di raffreddamento ridondanti etc.
 		
 		\newpage
 		\section{Gestione dei Data Center}
-		La gestione del data center è un problema complesso per la
-		quantità di bisogni in gioco, specie alcuni in conflitto tra loro. In
-		generale, si deve cercare di \emph{ridurre i costi massimizzando il
-		profitto}, il tutto cercando di garantire le SLA (\emph{Service
-		Level Agreement}, requisiti di throughput e tempo di risposta che devono essere rispettati dal
-		Service Provider nei confronti dei propri clienti). Il problema
-		della gestione può essere visto come un \textbf{problema di
-		ottimizzazione}, nel quale bisogna tenere conto di diverse
-		metriche di performance:
+		La gestione del data center è un problema complesso per la quantità di bisogni in gioco, specie alcuni in conflitto tra loro. In generale, si deve cercare di \emph{ridurre i costi massimizzando il profitto}, il tutto cercando di garantire la SLA (\emph{Service Level Agreement}, requisiti di throughput e tempo di risposta che devono essere rispettati dal Service Provider nei confronti dei propri clienti). Il problema	della gestione può essere visto come un \textbf{problema di ottimizzazione}, nel quale bisogna tenere conto di diverse metriche di performance:
 		
 		\begin{itemize}
 		\tightlist
 		\item
-		  Key Performance Indicator (KPI): le metriche
-		  di performance del sistema
+		  Key Performance Indicator (KPI): le metriche di performance del sistema
 		\item
-		  VINCOLI: solitamente requisiti aggiuntivi del sistema (es.
+		  Vincoli: solitamente requisiti aggiuntivi del sistema (es.
 		  tempi di servizio)
 		\end{itemize}
 		
-		\hypertarget{metriche-di-performance}{%
-		\subsection{Metriche di Performance}\label{metriche-di-performance}}
-		Per descrivere le performance di un data center è possibile considerare
-		diversi aspetti:
+		\subsection{Metriche di Performance}\label{metriche-di-performance}
+		Per descrivere le performance di un data center si possono considerare	diversi aspetti:
 		
 		\begin{itemize}
 		\tightlist
@@ -2567,90 +2451,46 @@
 		  Affidabilità / Disponibilità
 		\end{itemize}
 		\subsubsection{Consumo Energetico}
-		Per considerare il consumo energetico di cui ha bisogno un data center è
-		possibile pensare alle singole componenti del consumo:
-		computazione, networking, storage, e
-		cooling. La nuova frontiera tende verso i green
-		data center: siccome i data center sono strutture estremamente affamate
-		di risorse, sarebbe ideale limitare il consumo di brown energy
-		(non rinnovabile), promuovendo il consumo di \emph{energia
-		green}.
+		Per considerare il consumo energetico di cui ha bisogno un data center è possibile pensare ai singole componenti del consumo:
+		computazione, networking, storage, e cooling. La nuova frontiera tende verso i \textbf{green data center}: siccome i data center sono strutture estremamente affamate di risorse, sarebbe ideale limitare il consumo di brown energy (non rinnovabile), promuovendo il consumo di energia green, quindi generata da fonti rinnovabili.
 		
 		\subsubsection{Service Level Agreement (SLA)}\label{service-level-agreement-sla}
 		
-		Il SLA fa riferimento ai requisiti contrattuali che il sistema deve
-		rispettare. I requisiti si esprimono solitamente sotto forma di
-		\textbf{tempi di risposta}, \textbf{throughput} e
-		\textbf{disponibilità} del sistema. Per rappresentare il
-		tempo di risposta del sistema è necessario prendere in
-		considerazione un intervallo di tempo sensato: una finestra di
-		24h non avrebbe senso se il periodo per gran parte del tempo
-		durante la giornata è inattivo, per questo viene solitamente calcolato
-		in una finestra di pochi minuti. Il tempo di risposta inoltre non può
-		essere preso dai log, che tengono conto anche delle \emph{tempistiche
-		lato client}. Trattandosi di una variabile aleatoria,
-		rappresentata come valore medio o 90-percentile, è
-		necessario utilizzare una funzione cumulativa di probabilità
-		(integrale della densità di probabilità): ponendo
-		sull'asse delle X i valori (istanti di tempo) e
-		sull'asse delle Y la probabilità.\\
+		Il SLA fa riferimento ai requisiti contrattuali che il sistema deve rispettare nei confronti del cliente. I requisiti si esprimono solitamente sotto forma di \textbf{tempi di risposta}, \textbf{throughput} e \textbf{disponibilità} del sistema.\\
+		Per rappresentare il tempo di risposta del sistema è necessario prendere in	considerazione un intervallo di tempo sensato: una finestra di	24h non avrebbe senso se il periodo per gran parte del tempo durante la giornata è inattivo, per questo viene solitamente calcolato in una finestra di pochi minuti. Il tempo di risposta inoltre non può	essere preso dai log, che tengono conto anche delle \emph{tempistiche	lato client}.\\
+		Trattandosi di una variabile aleatoria,	rappresentata come valore medio o 90-percentile, è necessario utilizzare una funzione cumulativa di probabilità (integrale della densità di probabilità): ponendo sull'asse delle X i valori (istanti di tempo) e sull'asse delle Y la probabilità.
+		
 		\begin{figure}[ht]
 			\centering
-			\includegraphics[width=0.7\linewidth]{SAC_B8_sla}
+			\includegraphics[width=0.5\linewidth]{SAC_B8_sla}
 			\label{fig:sacb8sla}
 		\end{figure}
-		Molto spesso, specialmente per distribuzioni multimodali, si è soliti utilizzare metriche
-		come il 90-percentile, che esprimono l’andamento della maggior parte della misura
-		per la quale si vuole garantire un determinato SLA.
-		Il SLA talvolta può essere garantito all'interno di certe
-		soglie di carico. All'aumentare del carico del sistema
-		aumenta la probabilità di accodamento delle richieste.
+		
+		Molto spesso, specialmente per distribuzioni multimodali, si è soliti utilizzare metriche come il 90-percentile, che esprimono l’andamento della maggior parte della misura per la quale si vuole garantire un determinato SLA. Il SLA talvolta può essere garantito all'interno di certe soglie di carico. All'aumentare del carico del sistema aumenta la probabilità di accodamento delle richieste.
 		
 		\subsubsection{Utilizzo delle Risorse}\label{utilizzo-delle-risorse}
-		Utilizzo della CPU:\\
-		La variazione del carico ha un notevole impatto anche sul
-		funzionamento della CPU e in particolar modo sulla sua
-		temperatura. L'improvvisa accensione e spegnimento di un
-		server, può causare uno shock termico, che va a
-		accorciare la vita dei componenti.\\
-		Il principale parametro per stimare la riduzione di vita dei componenti è il fattore di accelerazione AF:
+		\paragraph{Utilizzo della CPU}
+		La variazione del carico ha un notevole impatto anche sul funzionamento della CPU e in particolar modo sulla sua temperatura. L'improvvisa accensione e spegnimento di un server, può causare uno \textbf{shock termico}, che va a accorciare la vita dei componenti.\\
+		Il principale parametro per stimare la riduzione di vita dei componenti è il fattore di accelerazione AF che dipende dal gradiente di temperatura e dal numero di cicli di potenza.
 		\[
 		AF = (\frac{f_{STD}}{f_{SM}})^{-m} (\frac{\delta_{STD}}{\delta_{SM}})^{-n}  (e^{\frac{E_a}{K}(1/T^{max}_{STD}-1/T^{max}_{SM})})
 		\]
-		Dipende dal gradiente di temperatura e dal numero di cicli di potenza.
-		L'utilizzo della CPU è un parametro da tenere sotto controllo per le performance del sistema,
-		ed è possibile farlo guardando \emph{gli istanti di tempo che questa
-		trascorre in stato IDLE}, ma anche considerandone il carico,
-		considerando \emph{il numero di processi attivi in coda di esecuzione
-		che può scegliere lo schedule}.\\
+		L'utilizzo della CPU è un parametro da tenere sotto controllo per le performance del sistema, ed è possibile farlo guardando \emph{gli istanti di tempo che questa trascorre in stato IDLE}, ma anche considerandone il carico, considerando il numero di processi in attesa di esecuzione che può scegliere lo scheduler.\\
 		La probabilità di un server di essere occupato si esprime come
-		\(\rho = \frac{\lambda}{\mu}\). Dove \(\lambda\) è \emph{frequenza di
-		arrivo delle richieste} (tasso di arrivo), mentre \(\mu\) è il
-		frequenza con cui le richieste vengono soddisfatte (\emph{tasso
-		di servizio}).\\
+		\(\rho = \frac{\lambda}{\mu}\). Dove \(\lambda\) è frequenza di arrivo delle richieste (tasso di arrivo), mentre \(\mu\) è il	frequenza con cui le richieste vengono soddisfatte (tasso di servizio).
 		
-		\subsubsection{Utilizzo della Rete}
-		Un'altra risorsa del sistema. È possibile studiarne l'utilizzo in
-		maniera analoga a quanto visto con la CPU, guardandone
-		l'utilizzo dei canali di rete, facendo però attenzione
-		al fatto che la banda teorica dei dispositivi non può essere
-		raggiunta. Tipicamente, infatti, oltre ad un certo tasso di utilizzazione aumentare il throughput provoca solamente più collisioni, con esiti deleteri per il throughput. Le due metriche per misurare l'utilizzazione sono il throughput (dati trasmessi nel periodo di tempo) e la bandwidth (massimo dei dati che è possibile trasmettere).
+		\paragraph{Utilizzo della Rete}
+		È possibile studiarne l'utilizzo in maniera analoga a quanto visto con la CPU, guardando l'\textbf{utilizzo dei canali di rete}, facendo però attenzione	al fatto che la banda teorica dei dispositivi non può mai essere raggiunta. Tipicamente, infatti, oltre ad un certo tasso di utilizzazione aumentare il throughput provoca solamente più collisioni, con esiti deleteri per il throughput.\\
+		Le due metriche per misurare l'utilizzazione sono il \textbf{throughput} (dati trasmessi nel periodo di tempo) e la \textbf{bandwidth} (massimo dei dati che è possibile trasmettere).
 		
 		\subsection{Modelli di Performance}\label{modelli-di-performance}
 		\subsubsection{Modello Energetico}\label{modello-energetico}
 		
-		Con un modello energetico è possibile misurare il \emph{consumo
-		energetico} in un sistema. Nel caso più semplice si considera una
-		\textbf{dipendenza lineare} tra l'utilizzazione della CPU e la dissipazione di calore.
+		Con un modello energetico è possibile misurare il \emph{consumo energetico} in un sistema. Nel caso più semplice si considera una	\textbf{dipendenza lineare} tra l'utilizzazione della CPU e la dissipazione di calore.\\
+			
+		Concentrandosi sul consumo energetico della CPU si può adottare il modello \textbf{\emph{Dynamic Voltage Frequency Scaling}} (DVFS), dove l'energia spesa varia con un fattore cubico rispetto alla frequenza del processore. Ulteriori modelli di questo tipo possono basarsi sull'utilizzo del disco o sul trasferimento dei dati (utilizzo della rete).\\
 		
-		Concentrandosi sul consumo energetico della CPU si può adottare il modello \textbf{\emph{Dynamic Voltage
-		/ Frequency Scaling}} (DVFS), dove l'energia spesa varia con un
-		fattore cubico rispetto alla frequenza del processore. Ulteriori modelli
-		di questo tipo possono basarsi sull'utilizzo del disco o sul
-		trasferimento dei dati (utilizzo della rete).
 		Se gli apparati di rete dedicati hanno costi fissi in termini di consumo energetico non si può dire lo stesso per le reti software defined, dove il traffico incide profondamente sul consumo energetico.
-		
-		
 		
 		\subsubsection{Modelli Basati sull'Affidabilità o Disponibilità}\label{modelli-basati-sullaffidabilituxe0-o-disponibilituxe0}
 		
@@ -2672,8 +2512,7 @@
 		Nel secondo caso invece l'attenzione è sul singolo DC e su come \textbf{scalarlo}, reagire agli \textbf{errori di predizione} e ai \textbf{burst di traffico}, \textbf{allocare} le VM necessarie e infine gestire la \textbf{sincronizzazione} tra i vari DC.
 		
 		\subsubsection{Modelli Economici}\label{modelli-economici}
-		Se un Provider deve pensare a \textbf{massimizzare} il ricavo, un cliente
-		dal canto suo deve \textbf{minimizzare} la spesa. Un Provider tipicamente deve chiedersi come agire nel caso di alto traffico (se prendere in prestito macchine da altri provider, se rivedere il tipo di VM che usa), nel caso di sotto utilizzo dei server (se vendere potenza computazionale con macchine Spot e quanto sia conveniente rispetto al solo tenerle spente). Il problema principale è, però, quello di definire i \textbf{modelli di prezzo} delle varie VM per massimizzarne il ritorno.
+		Se un Provider deve pensare a \textbf{massimizzare} il ricavo, un cliente dal canto suo deve \textbf{minimizzare} la spesa. Un provider tipicamente deve chiedersi come agire nel caso di alto traffico (se prendere in prestito macchine da altri provider, se rivedere il tipo di VM che usa), nel caso di sotto utilizzo dei server (se vendere potenza computazionale con macchine Spot e quanto sia conveniente rispetto al solo tenerle spente). Il problema principale è, però, quello di definire i \textbf{modelli di prezzo} delle varie VM per massimizzarne il ritorno.\\
 		Queste macchine sono:
 		
 		\begin{itemize}
@@ -2682,26 +2521,24 @@
 		  Istanze di VM Dedicate: macchine economiche, il cui utilizzo
 		  si paga anticipo per essere utilizzate mesi o anni, sempre disponibili
 		\item
-		  Istanze di VM On Demand: costi alti (\emph{3 x quelle
-		  dedicate}), il cui utilizzo si paga per un breve periodo (ore), sempre
-		  disponibili
+		  Istanze di VM On Demand: costi alti (\emph{3 x quelle dedicate}), il cui utilizzo si paga per un breve periodo (ore), sempre disponibili
 		\item
 		  Spot VM: macchine generalmente vendute all'asta con l'intento
-		  di fare un profitto (anche se minimo), anche queste pagate per un
-		  breve termine, possono essere indisponibili. Se si paga un'ora
-		  e la macchina risulta indisponibile per un po' di tempo, quel tempo
-		  viene rimborsato.
+		  di fare un profitto (anche se minimo), anche queste pagate per un breve termine, possono essere indisponibili. Il tempo in cui la macchina non è disponibile viene rimborsato
 		\end{itemize}
 		
 		
 		\subsection{Variabili Decisionali}\label{variabili-decisionali}
 		\subsubsection{Posizionamento delle VM}\label{posizionamento-delle-vm}
-		Il Problema del Posizionamento delle VM può essere visto come un
-		\textit{bin packing problem} mono, considerando solo l'utilizzazione CPU, o multidimensionale, considerando anche l'utilizzazione delle altre risorse (RAM, CPU, ecc\ldots). Inoltre, è necessario fare analisi su più istanti temporali in base all'utilizzazione delle risorse che vengono assegnate alle VM. Poiché il problema del bin packing esplode all'aumentare del numero di VM, è possibile semplificare non guardando in termini di numero di
-		VM ma di classi di servizio. Categorizzando le macchine in base a determinate alle \textbf{classi} di risorse maggiormente utilizzate si possono ridurre drasticamente le dimensioni del problema a scapito della precisione. Il trade-off è necessario per datacenter che vogliano eseguire predizioni sul traffico in tempi computazionali accettabili.
+		Il Problema del posizionamento delle VM può essere visto come un
+		\textit{bin packing problem} mono-, considerando solo l'utilizzazione CPU, o multi-dimensionale, considerando anche l'utilizzazione delle altre risorse (RAM, CPU, ecc\ldots).\\
+		
+		Inoltre, è necessario fare analisi su più istanti temporali in base all'utilizzazione delle risorse che vengono assegnate alle VM. Poiché il problema del bin packing esplode all'aumentare del numero di VM, è possibile semplificare non guardando in termini di numero di VM ma di \textbf{classi di servizio}.\\
+		
+		Categorizzando le macchine in base a determinate alle classi di risorse maggiormente utilizzate si possono ridurre drasticamente le dimensioni del problema a scapito della precisione. Il trade-off è necessario per datacenter che vogliano eseguire predizioni sul traffico in tempi computazionali accettabili.
 		
 		\begin{quote}
-		Si vuole diminuire il Numero di server accesi, dove la formula: \[
+		Si vuole diminuire il numero di server accesi, dove la formula: \[
 		\min{\sum_{s\in S}} O_s
 		\] rappresenta il vettore booleano che indica se il server è
 		acceso o spento, mentre: \[
@@ -2718,36 +2555,25 @@
 
 		\subsubsection{Migrazione delle VM}\label{migrazione-delle-vm}
 		
-		La migrazione consiste nello spostamento di una
-		VM da un server a un altro, e si verifica solitamente quando i server
-		vengono sotto-utilizzati ($<=20\%$): questi vengono spenti e le macchine spostate
-		su altri server più attivi, in modo da poter spegnere i primi
-		risparmiando risorse ed energia (\textbf{server consolidation}). Queste variabile vengono identificate
-		con i termini \(g_{m,s}^{-}\) quando una \emph{macchina esce da un
-		server}, \(g_{m,s}^{+}\) quando entra.
+		La migrazione consiste nello spostamento di una VM da un server a un altro, e si verifica solitamente quando i server vengono sotto-utilizzati ($<=20\%$): questi vengono spenti e le macchine spostate su altri server più attivi, in modo da poter spegnere i primi risparmiando risorse ed energia (\textbf{server consolidation}). Queste variabile vengono identificate con i termini \(g_{m,s}^{-}\) quando una \emph{macchina esce da un server}, \(g_{m,s}^{+}\) quando entra.
 		
 		\subsubsection{Ottimizzazione della Rete}\label{ottimizzazione-della-rete}
 		
-		È necessario mappare il modo in cui le macchine comunicano tra loro in
-		maniera ottimale all'interno della rete. Identificando le macchine \textbf{affini} sulla base dello \textbf{scambio di dati} che avviene fra di loro è possibile definire quali devono stare vicine le une alle altre (stesso rack o cluster). Gli altri vincoli, sempre presenti, riguardano le risorse sul server per evitare il sovraccarico e la garanzia di disponibilità.\\
+		È necessario mappare il modo in cui le macchine comunicano tra loro in	maniera ottimale all'interno della rete. Identificando le macchine \textbf{affini} sulla base dello \textbf{scambio di dati} che avviene fra di loro è possibile definire quali devono stare vicine le une alle altre (stesso rack o cluster). Gli altri vincoli, sempre presenti, riguardano le risorse sul server per evitare il sovraccarico e la garanzia di disponibilità.\\
+		
 		E' possibile concentrarsi anche sul consumo di energia, l'utilizzo della banda evitando colli di bottiglia e minimizzare il numero di hops in modo da rendere la rete quanto più compatta possibile.
 		
 		\subsubsection{Orchestrazione}\label{orchestrazione}
 		
-		Dal punto di vista dell'utilizzatore Cloud, il Deployment del sistema deve considerare i vari
-		microservizi, il carico atteso su ciascuno di essi, i requisiti SLA e da decidere quale provider è in grado di far fronte a questi requisiti, sempre con l'obiettivo di \textbf{minimizzare} i costi. Il deployment ottimale viene stabilito in base a  il numero e il tipo di	VM per ciascun servizio, tenendo conto dell'evoluzione del
+		Dal punto di vista dell'utilizzatore Cloud, il Deployment del sistema deve considerare i vari	microservizi, il carico atteso su ciascuno di essi, i requisiti SLA e da decidere quale provider è in grado di far fronte a questi requisiti, sempre con l'obiettivo di \textbf{minimizzare} i costi. Il deployment ottimale viene stabilito in base a  il numero e il tipo di	VM per ciascun servizio, tenendo conto dell'evoluzione del
 		suo carico in base alle richieste e ai vincoli SLA.
 		
 		\subsection{Soluzioni in Ambito Industriale e di Ricerca}\label{soluzioni-in-ambito-industriale-e-di-ricerca}
+		
 		\subsubsection{Soluzione Basata sull'Utilizzo}\label{soluzione-basata-sullutilizzo}
 		
-		Si tratta della ``regola del pollice'' in ambito cloud: viene utilizzata
-		per la server consolidation, in modo da evitare
-		server sovraccarichi e server sottoutilizzati, viene
-		anche utilizzata per le decisioni di scaling e può
-		essere affiancata da algoritmi di predizione del carico.
-		Si utilizzano due soglie, indicando con \(U\) l'utilizzo
-		del server:
+		Si tratta della ``regola del pollice'' in ambito cloud: viene utilizzata per la server consolidation, in modo da evitare server sovraccarichi e server sottoutilizzati, viene anche utilizzata per le decisioni di scaling e può essere affiancata da algoritmi di predizione del carico.\\
+		Si utilizzano due soglie, indicando con \(U\) l'utilizzo del server:
 		
 		\begin{itemize}
 		\tightlist
@@ -2774,18 +2600,24 @@
 		
 		\begin{figure}[ht]
 			\centering
-			\includegraphics[width=0.7\linewidth]{SAC_B8_ecocloud}
-			\label{fig:sacb8ecocloud}
+			\begin{minipage}{0.5\textwidth}
+				\centering
+				\includegraphics[width=0.7\linewidth]{SAC_B8_ecocloud}
+				\label{fig:sacb8ecocloud}
+				\caption{Oggetto di migrazione}
+			\end{minipage}\hfill
+			\begin{minipage}{0.5\textwidth}
+				\centering
+				\includegraphics[width=0.7\linewidth]{images/SAC_B8_ecocloud2}
+				\label{fig:sacb8ecocloud2}
+				\caption{Soggetta a migrazione}
+			\end{minipage}
 		\end{figure}
 		
-		Nodi con un'utilizzazione compresa tra il 40\% e il 70\% saranno destinazione di una migrazione per poter consolidare i server. Quando invece la curva di utilizzo raggiunge il 90\% difficilmente tale nodo potrà accoglierne altri senza evitare l'overload e probabilmente subirà una migrazione per poterlo scaricare. Invece quando un nodo ha una bassa utilizzazione è probabile che sarà oggetto di migrazione così da poterlo spegnere. Questo permette la convergenza
-		del sistema ad una condizione ideale dove i
-		nodi hanno un'utilizzazione medio-alta.
+		Nodi con un'utilizzazione compresa tra il 40\% e il 70\% saranno destinazione di una migrazione per poter consolidare i server. Quando invece la curva di utilizzo raggiunge il 90\% difficilmente tale nodo potrà accoglierne altri senza evitare l'overload e probabilmente subirà una migrazione così da abbassare il carico. Invece quando un nodo ha una bassa utilizzazione è probabile che sarà oggetto di migrazione così da poterlo spegnere. Questo permette la convergenza	del sistema ad una condizione ideale dove i	nodi hanno un'utilizzazione medio-alta.
 		
 		Questa visione è stata confrontata con altre \emph{alternative
-		euristiche} come Best Fit Decreasing, che tiene conto di
-		molti parametri e una visione completa del data center,
-		riuscendo comunque a ottenere buoni risultati.
+		euristiche} come Best Fit Decreasing, che tiene conto di molti parametri e una visione completa del data center, riuscendo comunque a ottenere buoni risultati.
 		\end{quote}
 		
 		\paragraph{MBFD}
@@ -2793,32 +2625,19 @@
 		REF Paper. ``Energy Aware Resource Allocation -
 		Modified Best Fit Decresing'' (MBFD)
 		
-		QUesto algoritmo considera, a differenza del classico best-fit decreasing, macchine virtuali \textbf{eterogenee}.
-		Il posizionamento delle VM guarda al \textbf{minimizzare} il
-		\textbf{consumo energetico}. La selezione delle macchine da migrare nei server
-		in sovraccarico avviene cercando di minimizzare il numero
-		di \textbf{migrazioni} e minimizzando il numero di \textbf{accensioni} e
-		\textbf{spegnimenti}. Su questa base, vengono scelte per la migrazione le
-		macchine più vicine alla soglia, oppure in
-		maniera casuale.
+		Qeesto algoritmo considera, a differenza del classico best-fit decreasing, macchine virtuali \textbf{eterogenee}. Il posizionamento delle VM guarda al \textbf{minimizzare} il		\textbf{consumo energetico}. La selezione delle macchine da migrare nei server in sovraccarico avviene cercando di minimizzare il numero di \textbf{migrazioni}, il numero di \textbf{accensioni} e \textbf{spegnimenti}. Su questa base, vengono scelte per la migrazione le	macchine più vicine alla soglia, oppure in maniera casuale.
 		\end{quote}
 		
 		\paragraph{Hierarchical}
 		\begin{quote}
 		REF. Paper ``Hierarchical''
 		
-		Si considerano due tipi di problemi: quelli a lungo termine e quelli a
-		breve termine. Quelli a lungo termine consistono nel
-		distribuire il carico su più data center cloud, quello a
-		breve termine riguarda l'allocazione delle VM. 
+		Si considerano due tipi di problemi: quelli a \textbf{lungo termine} e quelli a \textbf{breve termine}. Quelli a lungo termine consistono nel distribuire il carico su più data center cloud, quello a	breve termine riguarda l'allocazione delle VM. 
+		In questo genere di rappresentazione, il tempo di risposta viene modellato tramite \textbf{reti di	code}.\\
 		
-		In questo genere di rappresentazione, il tempo di risposta viene modellato tramite \textbf{reti di
-		code}.
-		L’algoritmo \textbf{long term} ragiona con una finestra temporale di un’ora, il tempo di
-		riferimento per la frequenza di pagamento delle macchine virtuali (0.056€/hr, ad
-		esempio), utilizzando un predittore del traffico in arrivo.
+		L’algoritmo long term ragiona con una finestra temporale di un’ora, il tempo di riferimento per la \textbf{frequenza di pagamento} delle macchine virtuali (0.056€/hr, ad	esempio), utilizzando un predittore del traffico in arrivo.\\
 		
-		L'algoritmo di soluzione a \textbf{breve termine} segue il principio del \textbf{receding horizon}, in cui la soluzione ottimale si ottiene considerando l'intera finestra temporale, ma l'algoritmo applica solo le decisioni calcolate per il passo temporale più vicino. Il processo di ottimizzazione viene quindi ripetuto considerando il secondo intervallo di tempo come nuovo punto di partenza.
+		L'algoritmo di soluzione a breve termine segue il principio del \textbf{receding horizon}, in cui la soluzione ottimale si ottiene considerando l'intera finestra temporale, ma l'algoritmo applica solo le decisioni calcolate per il passo temporale più vicino. Il processo di ottimizzazione viene quindi ripetuto considerando il secondo intervallo di tempo come nuovo punto di partenza.
 		\end{quote}
 		
 		\paragraph{VMPlanner}
@@ -2826,11 +2645,7 @@
 		REF. Paper ``Optimizing Network Utilization -
 		VMPlanner''
 		
-		Si cerca di posizionare correttamente le VM in modo da
-		ridurre i sovraccarichi della rete, in particolare
-		alleggerendo la parte core della rete. Essendo un \emph{problema
-		NP Hard}, questo viene diviso in sottoproblemi, ciascuno \emph{NP
-		completo}:
+		Si cerca di posizionare correttamente le VM in modo da ridurre i sovraccarichi della rete, in particolare alleggerendo la parte core della rete. Essendo un \emph{problema NP Hard}, questo viene diviso in sottoproblemi, ciascuno \emph{NP completo}:
 		
 		\begin{enumerate}
 		\def\labelenumi{\arabic{enumi}.}
@@ -2844,10 +2659,7 @@
 		  traffico sulla geografia ottenuta
 		\end{enumerate}
 		
-		La soluzione ideale consiste nell'implementazione di
-		un'infrastruttura di rete adattiva, in grado di gestire
-		i flussi di traffico indipendentemente dalla loro dimensione. I nodi
-		all'interno della rete riconoscono il tipo di flusso e
+		La soluzione ideale consiste nell'implementazione di un'infrastruttura di rete adattiva, in grado di gestire	i flussi di traffico indipendentemente dalla loro dimensione. I nodi all'interno della rete riconoscono il tipo di flusso e
 		ricostruiscono le loro matrici per la comunicazione.
 		\end{quote}
 		
@@ -2856,18 +2668,11 @@
 		REF. Paper ``Joint Minimization of the Energy Cost -
 		JCDME''
 		
-		Approccio che cerca una funzione per minimizzare il \textbf{costo
-		energetico} tenendo conto di tanti parametri, a
-		ciascuno dei quali viene associato un peso. La
-		migrazione è un'operazione costosa in termini
-		di consumo energetico, pertanto affinché la decisione
-		abbia senso questo costo deve essere spalmato su più unità
-		di tempo. Se si ricorre alla migrazione bisogna essere sicuri che in
-		seguito il sistema \emph{continuerà a consumare e a richiedere un
-		livello più basso di energia per una quantità di tempo che giustifichi
-		la scelta}.
+		Approccio che cerca una funzione per minimizzare il \textbf{costo energetico} tenendo conto di tanti parametri, a ciascuno dei quali viene associato un peso. La migrazione è un'operazione costosa in termini di consumo energetico, pertanto affinché la decisione abbia senso questo costo deve essere spalmato su più unità di tempo.\\
+		Se si ricorre alla migrazione bisogna essere sicuri che in	seguito il sistema continuerà a consumare e a richiedere un livello più basso di energia per una quantità di tempo tale che giustifichi la scelta.
 		\end{quote}
 		
+		\begin{comment}
 		\newpage	
 		\section{Modelli di decisione}
 		\subsection{CBA: Analisi costi e benefici}
@@ -2921,4 +2726,7 @@
 		\subsection{Focus sul Cloud}
 		Il cloud introduce dei cambiamenti al tipico scenario, in quanto i costi di riduzione o di adozione di una tecnologia sono minori grazie al cloud computing.
 		Gli utenti possono configurare il loro sistema in base alle loro esigenze e la scalabilità avviene nel giro di minuti anzichè in giorni.
-			\end{document}
+		\end{comment}
+		
+		\end{document}
+		
